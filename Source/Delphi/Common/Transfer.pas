@@ -35,10 +35,10 @@ type
     FURL: string;
     FUser: string;
     procedure SetHost(const Value: string); virtual;
-    procedure SetURI(Value: TIdURI);
   protected
     function GetOnStatus: TIdStatusEvent; virtual; abstract;
     procedure SetOnStatus(Value: TIdStatusEvent); virtual; abstract;
+    procedure SetURI(Value: TIdURI); virtual;
   public
     procedure Abort; virtual; abstract;
     procedure Connect; virtual; abstract;
@@ -78,6 +78,7 @@ type
   protected
     function GetOnStatus: TIdStatusEvent; override;
     procedure SetOnStatus(Value: TIdStatusEvent); override;
+    procedure SetURI(Value: TIdURI); override;
   public
     constructor Create;
     destructor Destroy; override;
@@ -112,7 +113,7 @@ type
 implementation
 
 uses
-  System.IOUtils;
+  System.IOUtils, uHttpTransfer;
 
 {
 ********************************** TTransfer ***********************************
@@ -127,21 +128,6 @@ begin
   // TODO -cMM: TTransfer.SetURI default body inserted
   //if Assigned(FURI) then FURI.Free;
   FURI := Value;
-  self.Host := FURI.Host;
-  if trim(FURI.Username) = '' then
-    self.User := 'Anonymous'
-  else
-    self.User := FURI.Username;
-  self.Password := FURI.Password;
-  if trim(FURI.Path) = '' then
-    Self.CurrentDir := '/'
-  else
-    self.CurrentDir := FURI.Path;
-  self.FileName := FURI.Document;
-  if (FURI.Port = '') then
-    self.Port := 21
-  else
-    self.Port := StrToInt(FURI.Port);
 end;
 
 procedure TTransfer.Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount:
@@ -219,7 +205,7 @@ end;
 
 procedure TFTPTransfer.Get(FileName: String);
 var
-  temp: Integer;
+  temp: Int64;
 begin
   try
     if (not FIdFTP.Connected) then
@@ -324,6 +310,29 @@ begin
   FIdFtp.ProxySettings.ProxyType := fpcmNone;
 end;
 
+procedure TFTPTransfer.SetURI(Value: TIdURI);
+begin
+  // TODO -cMM: TFTPTransfer.SetURI default body inserted
+  //if Assigned(FURI) then FURI.Free;
+  inherited;
+  Self.URL := Value.URI;
+  self.Host := FURI.Host;
+  if trim(FURI.Username) = '' then
+    self.User := 'Anonymous'
+  else
+    self.User := FURI.Username;
+  self.Password := FURI.Password;
+  if trim(FURI.Path) = '' then
+    Self.CurrentDir := '/'
+  else
+    self.CurrentDir := FURI.Path;
+  self.FileName := FURI.Document;
+  if (FURI.Port = '') then
+    self.Port := 21
+  else
+    self.Port := StrToInt(FURI.Port);
+end;
+
 {
 ******************************* TTransferFactory *******************************
 }
@@ -364,10 +373,24 @@ begin
       FObjectList.Add(Result);
     end;
     end;
-    Result.URI := FIdURI;
+  end
+  else if AnsiUpperCase(FIdURI.Protocol) = 'HTTP' then
+  begin
+    Index := FObjectList.FindInstanceOf(THTTPTransfer);
+    if Index <> -1 then
+      Result := FObjectList.Items[Index] as TTransfer
+    else
+    begin
+    begin
+      Result := THTTPTransfer.Create;
+      FObjectList.Add(Result);
+    end;
+    end;
   end
   else
     raise ExceptionNoSuport.Create('不支持的网络协议！');
+
+  Result.URI := FIdURI;
 end;
 
 

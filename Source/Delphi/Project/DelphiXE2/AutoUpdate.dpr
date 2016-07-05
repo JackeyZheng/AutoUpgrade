@@ -10,7 +10,8 @@ uses
   uFileAction in '..\..\Common\uFileAction.pas',
   Update in '..\..\Common\Update.PAS',
   FSeting in '..\..\UI\FSeting.pas' {frmSeting},
-  FUpdate in '..\..\UI\FUpdate.pas' {frmAutoUpdate};
+  FUpdate in '..\..\UI\FUpdate.pas' {frmAutoUpdate},
+  uHttpTransfer in '..\..\Common\uHttpTransfer.pas';
 
 {$R *.res}
 
