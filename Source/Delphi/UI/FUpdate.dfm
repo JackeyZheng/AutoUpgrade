@@ -405,4 +405,11 @@ object frmAutoUpdate: TfrmAutoUpdate
     Left = 48
     Top = 32
   end
+  object atpgrdr1: TauAutoUpgrader
+    InfoFileURL = 'http://update.68803990.com/Caiwu/2015/SA/'
+    VersionDate = '07/05/2016'
+    VersionDateAutoSet = True
+    Left = 16
+    Top = 280
+  end
 end

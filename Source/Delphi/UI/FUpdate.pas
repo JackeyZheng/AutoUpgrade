@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, XPMan, ExtCtrls, IniFiles,
-  AppInfo, Transfer, IdComponent, Analyse;
+  AppInfo, Transfer, IdComponent, Analyse, auHTTP, auAutoUpgrader;
 
 
 {$R ..\Res\Res.res}
@@ -56,6 +56,7 @@ type
     Label19: TLabel;
     Label20: TLabel;
     lblStatuse: TLabel;
+    atpgrdr1: TauAutoUpgrader;
     procedure cmdNextClick(Sender: TObject);
     procedure cmdPrevClick(Sender: TObject);
     procedure Button3Click(Sender: TObject);

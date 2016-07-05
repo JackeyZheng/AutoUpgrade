@@ -10,7 +10,7 @@ type
   private
     FidHttp: TIdHttp;
   protected
-    function GetOnStatus: TIdStatusEvent; override;
+    function  GetOnStatus: TIdStatusEvent; override;
     procedure SetOnStatus(Value: TIdStatusEvent); override;
     procedure SetURI(Value: TIdURI); override;
   public
@@ -39,14 +39,18 @@ end;
 
 destructor THTTPTransfer.Destroy;
 begin
-  freeandnil(fIdHttp);
-  inherited;
+  if Assigned(fIdHttp) then
+  begin
+    fIdHttp.Disconnect;
+    FreeAndNil(fIdHttp);
+  end;
+  inherited Destroy;
   // TODO -cMM: THTTPTransfer.Destroy default body inserted
 end;
 
 procedure THTTPTransfer.Abort;
 begin
-
+  FidHttp.Disconnect;
 end;
 
 procedure THTTPTransfer.ClearProxySeting;
@@ -66,16 +70,18 @@ var
   FileStream: TFileStream;
 begin
   try
-    //FIdHTTP.ChangeDir(self.CurrentDir);
     if not DirectoryExists(ExtractFilePath(FileName)) then
       TDirectory.CreateDirectory(ExtractFilePath(FileName));
     if Tfile.Exists(FileName) then
       FileStream := TFileStream.Create(FileName, fmOpenWrite)
     else
       FileStream := TFileStream.Create(FileName, fmCreate);
+
+
     try
       FidHttp.Head(Self.URL);
       temp := FIdHTTP.Response.ContentLength;
+
       if temp > 102400 then
       begin
         FIdHTTP.OnWorkBegin := Self.WorkStart;
