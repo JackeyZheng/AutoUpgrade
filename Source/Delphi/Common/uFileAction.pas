@@ -73,7 +73,7 @@ var
 begin
   // TODO -cMM: TFileAction.GetFileVersionAsText default body inserted
   if (not FileExit) then
-    raise Exception.Create('制定文件未找到');
+    raise Exception.Create('指定文件未找到');
   GetBuildInfo(V1, V2, V3, V4);
   Result := IntToStr(V1) + '.' + IntToStr(V2) + '.' + IntToStr(V3) + '.' + IntToStr(V4);
 end;

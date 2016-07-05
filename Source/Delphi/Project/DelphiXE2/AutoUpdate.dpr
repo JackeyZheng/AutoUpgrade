@@ -2,6 +2,7 @@ program AutoUpdate;
 
 uses
   Forms,
+  Vcl.XPMan,
   Analyse in '..\..\Common\Analyse.PAS',
   AnalyserCmd in '..\..\Common\AnalyserCmd.PAS',
   AppInfo in '..\..\Common\AppInfo.PAS',

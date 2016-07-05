@@ -76,7 +76,6 @@ var
   temp: string;
 begin
   arrayString(path,'/');
-  i := 0;
   for i := 0 to length(Fstr) - 1 do
   begin
     if Fstr[i] <> '' then
@@ -114,7 +113,8 @@ begin
   RootNode := Xml.DocumentElement;
   RetList := TStringList.Create;
   
-  GetLocaleFormatSettings(0, dateTimeFormat);
+//  GetLocaleFormatSettings(0, dateTimeFormat);
+  dateTimeFormat := TFormatSettings.Create;
   dateTimeFormat.DateSeparator := '-';
   dateTimeFormat.LongDateFormat := 'YYYY-MM-DD';
 
