@@ -7,9 +7,49 @@ uses
   Forms, Dialogs, Transfer;
 
 type
-  TChkType = (chkNone, chkByVersion, chkByDate, chkBySize);
-  TUpdateType = (upCopy, upExecute);
+  /// <summary>
+  ///   更新检查类型
+  /// </summary>
+  TChkType = (
+    /// <summary>
+    ///   无
+    /// </summary>
+    chkNone,
+    /// <summary>
+    ///   按照文件版本检查
+    /// </summary>
+    chkByVersion,
+    /// <summary>
+    ///   按照日期检查
+    /// </summary>
+    chkByDate,
+    /// <summary>
+    ///   按照文件大小检查
+    /// </summary>
+    chkBySize,
+    /// <summary>
+    ///   源文件不存在的新建模式
+    /// </summary>
+    chkCreat);
+  /// <summary>
+  ///   更新的方式
+  /// </summary>
+  TUpdateType = (
+    /// <summary>
+    ///   拷贝更新，把新文件拷贝覆盖旧文件。
+    /// </summary>
+    upCopy,
+    /// <summary>
+    ///   执行更新 ，执行一个更新程序来更新。
+    /// </summary>
+    upExecute);
 
+  /// <summary>
+  ///   更新对象基类
+  /// </summary>
+  /// <remarks>
+  ///   定义了更新对象的基础信息
+  /// </remarks>
   TUpdate = class(TPersistent)
   private
     FChkType: TChkType;
@@ -44,31 +84,112 @@ type
     function GetNewSize: Int64; virtual;
     procedure SetNewSize(const Value: Int64); virtual;
   public
+    /// <summary>
+    ///   分析更新方式。构建指定更新方式的对象并返回。
+    /// </summary>
     function Analyse: TUpdate; virtual; abstract;
+    /// <summary>
+    ///   信息深fu'zhi
+    /// </summary>
     procedure AssignTo(Dest: TPersistent); override;
+    /// <summary>
+    ///   下载数据到指定路径。
+    /// </summary>
+    /// <param name="FileName">
+    ///   文件的完成路径
+    /// </param>
     procedure Download(FileName: String); overload; virtual; abstract;
+    /// <summary>
+    ///   下载数据到流
+    /// </summary>
+    /// <param name="Stream">
+    ///   流
+    /// </param>
     procedure Download(Stream: TStream); overload; virtual; abstract;
+    /// <summary>
+    ///   更新文件
+    /// </summary>
+    /// <returns>
+    ///   执行更新动作。
+    /// </returns>
     function UpdateIt: Boolean; virtual; abstract;
+    /// <summary>
+    ///   检查类型
+    /// </summary>
+    /// <value>
+    ///   参看TchkType
+    /// </value>
+    /// <seealso cref="TchkType">
+    ///   TchkType
+    /// </seealso>
     property ChkType: TChkType read GetChkType write SetChkType;
+    /// <summary>
+    ///   更新文件的 文件名称
+    /// </summary>
     property FileName: string read GetFileName write SetFileName;
+    /// <summary>
+    ///   本地文件的相对路径。
+    /// </summary>
     property LocalFile: string read GetLocalFile write SetLocalFile;
+    /// <summary>
+    ///   新文件的日期
+    /// </summary>
     property NewDate: TDateTime read GetNewDate write SetNewDate;
+    /// <summary>
+    ///   新文件的版本
+    /// </summary>
     property NewVersion: string read GetNewVersion write SetNewVersion;
+    /// <summary>
+    ///   临时文件夹路径，含文件名
+    /// </summary>
     property TempPath: string read GetTempPath write SetTempPath;
+    /// <summary>
+    ///   传输对象
+    /// </summary>
     property TransferObj: TTransfer read GetTransferObj write SetTransferObj;
+    /// <summary>
+    ///   更新类型
+    /// </summary>
+    /// <seealso cref="TUpdateType">
+    ///   TUpdateType
+    /// </seealso>
     property UpdateType: TUpdateType read GetUpdateType write SetUpdateType;
+    /// <summary>
+    ///   更新下载文件的地址URL
+    /// </summary>
     property UpdateURL: string read GetUpdateURL write SetUpdateURL;
+    /// <summary>
+    ///   新文件的大小
+    /// </summary>
     property NewSize: Int64 read GetNewSize write SetNewSize;
   end;
   
   TFileUpdate = class(TUpdate)
   public
+    /// <summary>
+    ///   文件更新的基础实现类，它实现了基础的更新呢信息和操作。在它上增加装饰类实现Copy更新和执行更新。
+    /// </summary>
+    /// <seealso cref="TUpdate">
+    ///   TUpdate
+    /// </seealso>
     function Analyse: TUpdate; override;
+    /// <summary>
+    ///   下载数据到指定的文件
+    /// </summary>
     procedure Download(FileName: String); overload; override;
+    /// <summary>
+    ///   下载数据到liu
+    /// </summary>
     procedure Download(Stream: TStream); overload; override;
+    /// <summary>
+    ///   执行更新，真实的执行是有装饰类来完成的。
+    /// </summary>
     function UpdateIt: Boolean; override;
   end;
   
+  /// <summary>
+  ///   装饰类基类
+  /// </summary>
   TUpdateDecorator = class(TUpdate)
   private
     FOwnsUpdate: Boolean;
@@ -97,12 +218,33 @@ type
     function GetNewSize: Int64; override;
     procedure SetNewSize(const Value: Int64); override;
   public
+    /// <summary>
+    ///   构造函数
+    /// </summary>
+    /// <param name="AUpdate">
+    ///   传入基础执行类。
+    /// </param>
     constructor Create(AUpdate: TUpdate);
+    /// <summary>
+    ///   析构函数
+    /// </summary>
     destructor Destroy; override;
+    /// <summary>
+    ///   是否自主管理Update主对象。默认为True
+    /// </summary>
+    /// <value>
+    ///   默认为True
+    /// </value>
     property OwnsUpdate: Boolean read FOwnsUpdate write FOwnsUpdate;
+    /// <summary>
+    ///   宿主对象
+    /// </summary>
     property Update: TUpdate read GetUpdate write SetUpdate;
   end;
   
+  /// <summary>
+  ///   Copy方式实现类
+  /// </summary>
   TCopyUpdate = class(TUpdateDecorator)
   public
     function Analyse: TUpdate; override;
@@ -111,6 +253,9 @@ type
     function UpdateIt: Boolean; override;
   end;
   
+  /// <summary>
+  ///   执行方式实现类
+  /// </summary>
   TExecuteUpdate = class(TUpdateDecorator)
   public
     function Analyse: TUpdate; override;
@@ -293,12 +438,13 @@ constructor TUpdateDecorator.Create(AUpdate: TUpdate);
 begin
   inherited Create;
   Update := AUpdate;
+  FOwnsUpdate := True;
 end;
 
 destructor TUpdateDecorator.Destroy;
 begin
   Update := nil;
-  if (Assigned(FUpdate)) then
+  if (Assigned(FUpdate)) and FOwnsUpdate then
     FreeAndNil(FUpdate);
   inherited Destroy;
 end;
@@ -393,7 +539,7 @@ begin
   if Value <> FUpdate then
   begin
     if OwnsUpdate then FUpdate.Free;
-    FUpdate := Value;
+      FUpdate := Value;
   end;
 end;
 
@@ -471,13 +617,13 @@ begin
   FileAction := TFileAction.Create(Update.TempPath);
   try
     try
-      //if FileAction.Execute(SW_SHOWNORMAL) <> INFINITE then
-      //begin
-         MoveFile(Update.TempPath, Update.LocalFile);
+      if FileAction.Execute(SW_SHOWNORMAL) <> INFINITE then
+      begin
+         //MoveFile(Update.TempPath, Update.LocalFile);
          Result := true;
-      //end
-      //else
-      //  Result := false;
+      end
+      else
+        Result := false;
     except
       Result := false;
     end;
