@@ -77,17 +77,16 @@ type
     STime: TDateTime;
     AbortTransfer: Boolean;
     t: TTestThread;
+    procedure CheckUpdate;
     procedure OnAnalyse(Sender: TObject; Count, Current: Integer);
     procedure DownloadBegin(Sender: TObject; const AWorkCountMax: Integer);
     procedure OnDownload(Sender: TObject; const AWorkCount: Integer);
     procedure DownloadEnd(Sender: TObject);
-    //procedure AnalyseDownloadBegin(Sender: TObject; const AWorkCountMax: Integer);
-    //procedure OnAnalyseDownload(Sender: TObject; const AWorkCount: Integer);
-    //procedure AnalyseDownloadEnd(Sender: TObject);
     procedure GetTempPath;
     Procedure GetLocalPath;
     procedure OnStatuse(ASender: TObject; const AStatus: TIdStatus; const AStatusText: string);
     Function CreateTransfer(URL: String):TTransfer;
+    procedure InitAppInfo;
     procedure UpdaeNext(temp: TStrings);
   public
     { Public declarations }
@@ -99,7 +98,7 @@ var
 
 implementation
 
-uses FSeting, Update;
+uses FSeting, Update, uFileAction, System.IOUtils;
 
 Var
   AverageSpeed: Double = 0;
@@ -164,6 +163,28 @@ begin
   frmSeting.ShowModal;
 end;
 
+procedure TfrmAutoUpdate.CheckUpdate;
+var
+  FileAction: TFileAction;
+begin
+  // TODO -cMM: TfrmAutoUpdate.CheckUpdate default body inserted
+  FileAction := TFileAction.Create(Application.ExeName);
+  try
+    atpgrdr1.VersionNumber := FileAction.GetFileVersionAsText;
+    Self.Caption := Format('金格网自动更新程序【版本%s】', [atpgrdr1.VersionNumber]);
+    if AppInfo.ProxyServer <> '' then
+    begin
+      atpgrdr1.Proxy.ProxyServer := AppInfo.ProxyServer;
+      atpgrdr1.Proxy.ProxyPort := StrToInt(AppInfo.ProxyPort);
+      atpgrdr1.Proxy.AccessType := atUseProxy;
+    end;
+    atpgrdr1.CheckUpdate;
+  finally
+    FreeAndNil(FileAction);
+  end;
+
+end;
+
 procedure TfrmAutoUpdate.FormCreate(Sender: TObject);
 var
   IniFile: TIniFile;
@@ -185,13 +206,13 @@ begin
   lbAppList.Items.Assign(Sessions);
   lbApplist.ItemIndex := 0;
   FreeAndNil(Sessions);
+  InitAppInfo;
+  CheckUpdate;
 end;
 
 procedure TfrmAutoUpdate.tbsGetUpdateShow(Sender: TObject);
 var
   Analyse: TAnalyse;
-  //i:        Integer;
-  //Strs: TStrings;
 begin
   tbsGetUpdate.Update;
   Application.ProcessMessages;
@@ -201,43 +222,17 @@ begin
   Analyse := TXMLAnalyse.Create;
   if lbAppList.Items.Count > 0 then
   begin
-    if (Assigned(AppInfo)) then AppInfo.Free;
-    AppInfo := TIniAppInfo.Create(ExtractFilePath(Application.ExeName) + 'UpdateApps.ini',
-                  lbAppList.Items[lbAppList.ItemIndex]);
 
     Label3.Caption := '从网络读取更新定义文件。。。。。。';
     Label3.Update;
-    //for i := 0 to lbAppList.Items.Count - 1 do
-    //begin
     AppInfo.AppName := lbAppList.Items[lbAppList.ItemIndex];
     Analyse.UpdateList := AppInfo.UpdateServer  + AppInfo.ListDefFile;
-    //Analyse.Transfer := TransferFactory.CreateTransfer(Analyse.UpdateList);
     Analyse.Transfer := CreateTransfer(Analyse.UpdateList);
-    //Analyse.Transfer.OnTransferStart := AnalyseDownloadBegin;
-    //Analyse.Transfer.OnTransfer := OnAnalyseDownload;
     Analyse.OnAnalyse := OnAnalyse;
     try
       t := TTestThread.Create(Analyse);
       t.OnRe := UpdaeNext;
       t.Resume;
-      //Strs := Analyse.GetUpdateList;
-      //end;
-//      lbUpdateList.Items.Assign(Strs);
-//      FreeAndNil(Strs);
-//      if (lbUpdateList.Items.Count > 0) then
-//      begin
-//        Label3.Font.Color := clRed;
-//        Label3.Caption := Format('共有 %d 个可用更新', [lbUpdateList.Items.Count]);
-//        self.cmdPrev.Enabled := true;
-//        self.cmdNext.Enabled := true;
-//      end
-//      else
-//      begin
-//        Label3.Font.Color := clGreen;
-//        Label3.Caption := '你的软件现在是最新的版本，不需要更新';
-//        self.cmdPrev.Enabled := true;
-//        self.cmdNext.Enabled := false;
-//      end;
     except
       Label3.Font.Color := clRed;
       Label3.Caption := '从网络读取更新文件错误，请检查您的网络是否连通!';
@@ -246,8 +241,6 @@ begin
       self.cmdNext.Enabled := false;
     end;
   end;
-  //FreeAndNil(Analyse);
-  //Analyse.UpdateList :=
 end;
 
 procedure TfrmAutoUpdate.OnAnalyse(Sender: TObject; Count,
@@ -451,6 +444,14 @@ begin
   end
   else
     Result.ClearProxySeting;
+end;
+
+procedure TfrmAutoUpdate.InitAppInfo;
+begin
+  // TODO -cMM: TfrmAutoUpdate.InitAppInfo default body inserted
+  if (Assigned(AppInfo)) then AppInfo.Free;
+  AppInfo := TIniAppInfo.Create(ExtractFilePath(Application.ExeName) + 'UpdateApps.ini',
+                lbAppList.Items[lbAppList.ItemIndex]);
 end;
 
 procedure TfrmAutoUpdate.UpdaeNext(temp: TStrings);
