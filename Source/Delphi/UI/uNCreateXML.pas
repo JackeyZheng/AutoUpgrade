@@ -291,7 +291,6 @@ end;
 procedure TFrmNCreateXML.ListBox1Click(Sender: TObject);
 var
   upFile: TUpdateFile;
-  temp: string;
 begin
     if ListBox1.Count=0 then exit;
     if ListBox1.ItemIndex=-1 then exit;
