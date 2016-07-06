@@ -25,11 +25,6 @@ type
     lbl8: TLabel;
     edtFileName: TEdit;
     edtURL: TEdit;
-    rbNo: TRadioButton;
-    rbVer: TRadioButton;
-    rbDate: TRadioButton;
-    rbSize: TRadioButton;
-    rbCreate: TRadioButton;
     grp4: TGroupBox;
     rbCopy: TRadioButton;
     edtSize: TEdit;
@@ -39,6 +34,16 @@ type
     rbExecute: TRadioButton;
     btnUpdateXML: TButton;
     dlgSave1: TSaveDialog;
+    btn1: TButton;
+    rbNo: TRadioButton;
+    rbCreate: TRadioButton;
+    rbDate: TRadioButton;
+    rbSize: TRadioButton;
+    rbVer: TRadioButton;
+    btn2: TButton;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
     procedure btnOpenClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnUpdateXMLClick(Sender: TObject);
@@ -47,12 +52,16 @@ type
     procedure InitTree;
     procedure rbCreateClick(Sender: TObject);
     procedure createNode(root: IXmlNode; node: TTreeNode);
+    procedure createNodeNewFormat(root: IXmlNode; node: TTreeNode);
     function getVersion(path: string): string;
     function getDate(path: string): string;
     function getSize(path: string): string;
     function RightPosEx(const Substr,S: string): Integer;
     function GetBuildInfo(var V1, V2, V3, V4: Word; path: string):
     Boolean;
+    procedure FormCreate(Sender: TObject);
+    procedure btn1Click(Sender: TObject);
+    procedure btn2Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -61,6 +70,7 @@ type
   type
     UpdateFile = class
       private
+        FsNULL:string;
         FFileName: string;
         FFileURL: string;
         FChkType: string;
@@ -71,6 +81,7 @@ type
         FDeskFile: string;
     public
         constructor Create;
+        property sNULL: string read FsNULL write FsNULL;
         property ChkType: string read FChkType write FChkType;
         property DeskFile: string read FDeskFile write FDeskFile;
         property FileName: string read FFileName write FFileName;
@@ -87,19 +98,135 @@ implementation
 
 {$R *.dfm}
 
+procedure TForm1.btn1Click(Sender: TObject);
+var
+  dirName: string;
+  i, count, k: Integer;
+  temp, tempCase, itemstr, exitH: string;
+  DirNode : TTreeNode;
+  temp1: UpdateFile;
+begin
+  dirName:=edtDir.Text;
+  if dirName<>'' then
+  begin
+     DirTreeView.Items.Clear;
+     fllst1.Items.Clear;
+
+     if DirectoryExists(dirName) then
+     begin
+        fllst1.mask:='*.*';
+        fllst1.Directory := dirName;
+        fllst1.Update;
+
+        count := fllst1.Items.Count;
+        for i := 0 to count - 1 do
+        begin
+           itemstr := fllst1.Items[i];
+           if pos('[', itemstr) > 0 then
+           begin
+              //针对目录的操作
+              itemstr := StringReplace(itemstr, '[', '', [rfReplaceAll]);
+              itemstr := StringReplace(itemstr, ']', '', [rfReplaceAll]);
+              if (itemstr <> '.') and (itemstr <> '..') then
+              begin
+                DirNode := DirTreeView.Items.AddChild(DirTreeView.Selected, itemstr);
+                fllst1.Selected[i] := True;
+                DirNode.HasChildren := True;
+                temp1 := UpdateFile.Create;
+                temp1.FileURL := fllst1.FileName;
+                //temp1.FileName := fllst1.FileName;
+                DirNode.Data := Pointer(temp1);
+                //DirNode.Selected:=True;
+
+                //DirNode.Expanded := True;
+                //DirNode.Expand(true);
+              end;
+           end
+           else
+           begin
+              //针对文件的操作
+              DirNode := DirTreeView.Items.AddChild(DirTreeView.Selected, itemstr);
+
+              fllst1.Selected[i] := True;
+              temp := StringReplace(fllst1.FileName, edtDir.Text + '\', '', [rfReplaceAll]);
+              temp := StringReplace(temp, '\', '/', [rfReplaceAll]);
+              temp1 := UpdateFile.Create;
+              temp1.FileURL := temp;
+              temp1.FileSize := getSize(fllst1.FileName);
+              exitH := ExtractFileExt(fllst1.FileName);
+              if (exitH = '.exe') or (exitH = '.dll') then
+                temp1.Version := getVersion(fllst1.FileName);
+              temp1.ModyDatetime := getDate(fllst1.FileName);
+              k := RightPosEx(temp, '/');
+              if k <> 0 then
+              begin
+                tempCase := MidStr(temp, k + 1, Length(temp));
+                temp1.FileName := tempCase;
+                if temp1.DeskFile = '' then
+                  temp1.DeskFile := tempCase;
+              end
+              else
+              begin
+                temp1.FileName := temp;
+                if temp1.DeskFile = '' then
+                  temp1.DeskFile := temp;
+              end;
+              DirNode.Data := Pointer(temp1);
+              //DirNode.Selected:=True;
+              //DirNode.Expanded := True;
+              //DirNode.Expand(true);
+           end;
+        end;
+        //DirTreeView.FullExpand;
+     end;
+  end;
+end;
+
+procedure TForm1.btn2Click(Sender: TObject);
+var
+  fileName: string;
+  ixd: IXmlDocument;
+  root: IXmlNode;
+  i: Integer;
+begin
+  dlgSave1.Filter :='XMLFile(*.xml)|*.xml';
+  dlgSave1.FilterIndex := 1;
+  dlgSave1.DefaultExt := 'xml';
+  if dlgSave1.Execute then
+  begin
+    fileName := ExtractFileExt(dlgSave1.FileName);
+    ixd := NewXmlDocument();
+    if DirTreeView.Items.Count <= 0 then Exit;
+
+    root := ixd.AddChild('UpdateLists');
+    ixd.DocumentElement:=root;
+    root.Text:=#13#10;
+    for i := 0 to DirTreeView.Items.Count - 1 do
+    begin
+      createNodeNewFormat(root, DirTreeView.Items[i]);
+    end;
+
+    ixd.SaveToFile(dlgSave1.FileName);
+
+    ShowMessage('XML文件生成成功，谢谢！');
+  end;
+end;
+
 procedure TForm1.btnOpenClick(Sender: TObject);
 var
   temp: string;
 begin
   if SelectDirectory('请指定文件夹', '', temp) then
   begin
-    edtDir.Text := temp;
-    fllst1.Items.Clear;
-    fllst1.Directory := temp;
     DirTreeView.Items.Clear;
+    fllst1.Items.Clear;
+
+    edtDir.Text := temp;
+    fllst1.mask:='*.*';
+    fllst1.Directory := temp;
+    fllst1.Update;
     InitTree;
   end;
-
 end;
 
 procedure TForm1.btnSaveClick(Sender: TObject);
@@ -160,7 +287,6 @@ begin
     end;
 
     ixd.SaveToFile(dlgSave1.FileName);
-//    ixd.SaveToXML(XML);
 
     ShowMessage('XML文件生成成功，谢谢！');
   end;
@@ -184,34 +310,88 @@ begin
   //
   node1 := root.AddChild('UpdateFile');
   upFile := UpdateFile(node.Data);
-  node2 := node1.AddChild('FileName');
-  node2.Text := upFile.FileName;
 
-  node3 := node1.AddChild('FileURL');
-  node3.Text := upFile.FileURL;
+    node2 := node1.AddChild('FileName');
+    node2.Text := upFile.FileName;
 
-  node4 := node1.AddChild('chkType');
-  node4.Text := upFile.ChkType;
+    node3 := node1.AddChild('FileURL');
+    node3.Text := upFile.FileURL;
 
-  node5 := node1.AddChild('UpdateType');
-  node5.Text := upFile.UpdateType;
+    node4 := node1.AddChild('chkType');
+    node4.Text := upFile.ChkType;
 
-  node6 := node1.AddChild('Version');
-  node6.Text := upFile.Version;
+    node5 := node1.AddChild('UpdateType');
+    node5.Text := upFile.UpdateType;
 
-  node7 := node1.AddChild('DateTime');
-  node7.Text := upFile.ModyDatetime;
+    node6 := node1.AddChild('Version');
+    node6.Text := upFile.Version;
 
-  node8 := node1.AddChild('FileSize');
-  node8.Text := upFile.FileSize;
+    node7 := node1.AddChild('DateTime');
+    node7.Text := upFile.ModyDatetime;
 
-  node9 := node1.AddChild('DeskFile');
-  node9.Text := upFile.DeskFile;
+    node8 := node1.AddChild('FileSize');
+    node8.Text := upFile.FileSize;
+
+    node9 := node1.AddChild('DeskFile');
+    node9.Text := upFile.DeskFile;
 
   for i := 0 to node.Count - 1 do
   begin
     createNode(root, node[i]);
   end;
+end;
+
+procedure TForm1.createNodeNewFormat(root: IXmlNode; node: TTreeNode);
+var
+  i: Integer;
+  upFile: UpdateFile;
+  node1: IXmlNode;
+  node2: IXmlNode;
+  node3: IXmlNode;
+  node4: IXmlNode;
+  node5: IXmlNode;
+  node6: IXmlNode;
+  node7: IXmlNode;
+  node8: IXmlNode;
+  node9: IXmlNode;
+begin
+  node1 := root.AddChild('UpdateFile');
+  node1.Text:=#13#10;
+
+  if node=nil then exit;
+
+  upFile := UpdateFile(node.Data);
+    node2 := node1.AddChild('FileName');
+    node2.Text := upFile.FileName;
+
+
+    node3 := node1.AddChild('FileURL');
+    node3.Text := upFile.FileURL;
+
+    node4 := node1.AddChild('chkType');
+    node4.Text := upFile.ChkType;
+
+    node5 := node1.AddChild('UpdateType');
+    node5.Text := upFile.UpdateType;
+
+    node6 := node1.AddChild('Version');
+    node6.Text := upFile.Version;
+
+    node7 := node1.AddChild('DateTime');
+    node7.Text := upFile.ModyDatetime;
+
+    node8 := node1.AddChild('FileSize');
+    node8.Text := upFile.FileSize;
+
+    node9 := node1.AddChild('DeskFile');
+    node9.Text := upFile.DeskFile;
+
+    for i := 0 to node.Count - 1 do
+    begin
+      createNodeNewFormat(root, nil);
+      createNodeNewFormat(root, node[i]);
+    end;
+
 end;
 
 procedure TForm1.DirTreeViewChanging(Sender: TObject; Node: TTreeNode; var
@@ -270,6 +450,12 @@ begin
       Node.Expanded := True;
     end;
   end;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+    DirTreeView.Items.Clear;
+    fllst1.Items.Clear;
 end;
 
 function TForm1.getDate(path: string): string;
@@ -373,12 +559,14 @@ begin
           temp1.FileURL := fllst1.FileName;
           //temp1.FileName := fllst1.FileName;
           DirNode.Data := Pointer(temp1);
+          DirNode.Expanded := True;
         end;
      end
      else
      begin
         //针对文件的操作
         DirNode := DirTreeView.Items.AddChild(DirTreeView.Selected, itemstr);
+
         fllst1.Selected[i] := True;
         temp := StringReplace(fllst1.FileName, edtDir.Text + '\', '', [rfReplaceAll]);
         temp := StringReplace(temp, '\', '/', [rfReplaceAll]);
@@ -404,6 +592,7 @@ begin
             temp1.DeskFile := temp;
         end;
         DirNode.Data := Pointer(temp1);
+        DirNode.Expanded := True;
      end;
   end;
 end;
@@ -444,6 +633,7 @@ begin
   FChkType := '0';
   FUpdateType := '1';
   FVersion := '1';
+  sNULL:=#13#10;
   // TODO -cMM: UpdateFile.Create default body inserted
 end;
 

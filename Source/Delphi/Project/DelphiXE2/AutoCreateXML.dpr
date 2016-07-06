@@ -2,13 +2,13 @@ program AutoCreateXML;
 
 uses
   Forms,
-  CreateXML in '..\..\UI\CreateXML.pas' {Form1};
+  uNCreateXML in '..\..\UI\uNCreateXML.pas' {FrmNCreateXML};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TFrmNCreateXML, FrmNCreateXML);
   Application.Run;
 end.
