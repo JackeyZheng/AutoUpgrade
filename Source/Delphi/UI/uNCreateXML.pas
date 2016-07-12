@@ -155,6 +155,7 @@ procedure TFrmNCreateXML.btnOpenClick(Sender: TObject);
 var
   temp: string;
 begin
+  temp := edtDir.Text;
   if SelectDirectory('请指定文件夹', '', temp) then
   begin
     edtDir.Text:=IncludeTrailingPathDelimiter(temp);
@@ -192,7 +193,7 @@ begin
   upFile.DeskDir := edtdeskDir.Text;
   upFile.ModyDatetime := edtMody.Text;
 
-  ShowMessage('该节点信息保存成功，谢谢！');
+  //ShowMessage('该节点信息保存成功，谢谢！');
 end;
 
 procedure TFrmNCreateXML.btnUpdateXMLClick(Sender: TObject);
@@ -263,7 +264,7 @@ end;
 
 procedure TFrmNCreateXML.edtDirChange(Sender: TObject);
 begin
-  ListBox1.Clear;
+//  ListBox1.Clear;
   dlgOpen1.InitialDir := edtDir.Text;
 end;
 
@@ -318,7 +319,7 @@ begin
       else if upFile.ChkType = '4' then
       begin
         rbCreate.Checked := True;
-        rbExecute.Checked := True;
+        //rbExecute.Checked := True;
       end;
 
       edtSize.Text := upFile.FileSize;

@@ -88,8 +88,6 @@ type
     procedure Get(Stream: TStream); overload; override;
     procedure SetProxy(ProxyObj: TPersistent); overload; override;
     procedure SetProxy(ProxyInfo: TProxySeting); overload; override;
-    procedure WorkStart(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax:
-        Int64); override;
     procedure ClearProxySeting; override;
   end;
   
@@ -214,11 +212,13 @@ begin
     if not DirectoryExists(ExtractFilePath(FileName)) then
       TDirectory.CreateDirectory(ExtractFilePath(FileName));
     temp := FIdFtp.Size(self.FileName);
-    if temp > 102400 then
+    if temp > 10240 then
     begin
       FIdFtp.OnWorkBegin := Self.WorkStart;
       FIdFtp.OnWork := Self.Work;
       FIdFtp.OnWorkEnd := Self.WorkEnd;
+      if Assigned(FIdfTP.OnWorkBegin) then
+        FIdfTP.OnWorkBegin(FIdfTP, wmRead, temp);
     end
     else
     begin
@@ -275,32 +275,6 @@ begin
   FIdFtp.ProxySettings.UserName := ProxyInfo.ProxyUser;
   FIdFtp.ProxySettings.Port := ProxyInfo.ProxyPort;
   FIdFtp.ProxySettings.Password := ProxyInfo.ProxyPass;
-end;
-
-procedure TFTPTransfer.WorkStart(Sender: TObject; AWorkMode: TWorkMode;
-    AWorkCountMax: Int64);
-var
-  temp: Integer;
-begin
-  //inherited WordStart(Sender, AWorkMode, AWorkCountMax);
-  if (Assigned(OnTransferStart))  then
-    if (AWorkCountMax > 0) then
-      inherited WorkStart(Sender, AWorkMode, AWorkCountMax)
-    else
-    begin
-      temp := FIdFtp.Size(Self.FileName);
-      if temp < 0 then
-      begin
-        inherited WorkStart(Sender, AWorkMode, 10);
-      end
-      else
-      begin
-        inherited WorkStart(Sender, AWorkMode, temp);
-      end;
-
-    end;
-
-      //OnTransferStart(Sender, );
 end;
 
 procedure TFTPTransfer.ClearProxySeting;

@@ -77,12 +77,11 @@ begin
     else
       FileStream := TFileStream.Create(FileName, fmCreate);
 
-
     try
-      FidHttp.Head(Self.URL);
+      FidHttp.Head(Self.URI.URLEncode(Self.URL));
       temp := FIdHTTP.Response.ContentLength;
 
-      if temp > 102400 then
+      if temp > 10240 then
       begin
         FIdHTTP.OnWorkBegin := Self.WorkStart;
         FIdHTTP.OnWork := Self.Work;
@@ -94,7 +93,7 @@ begin
         FIdHTTP.OnWork := nil;
         FIdHTTP.OnWorkEnd := nil;
       end;
-      FIdHTTP.Get(Self.URL, FileStream);
+      FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
     finally
       FreeAndNil(FileStream);
     end;

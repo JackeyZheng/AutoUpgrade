@@ -173,8 +173,7 @@ begin
     tmpUpdate := Update.Analyse;
     if (Assigned(tmpUpdate)) then
     begin
-      Index := RetList.Add(tmpUpdate.FileName + '    版本: ' + tmpUpdate.NewVersion);
-      RetList.Objects[Index] := tmpUpdate;
+      Index := RetList.AddObject(Format('%s  文件大小：[%dK]', [tmpUpdate.FileName, tmpUpdate.NewSize div 1024]), tmpUpdate);
     end;
   end;
   Xml := nil;
