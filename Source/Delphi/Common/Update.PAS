@@ -279,7 +279,7 @@ type
 
 implementation
 
-uses AnalyserCmd, FmxUtils, uFileAction;
+uses AnalyserCmd, FmxUtils, uFileAction, System.IOUtils;
 
 {
 *********************************** TUpdate ************************************
@@ -585,6 +585,9 @@ end;
 function TCopyUpdate.UpdateIt: Boolean;
 begin
   try
+    if not TDirectory.Exists(ExtractFilePath(LocalFile)) then
+      TDirectory.CreateDirectory(ExtractFilePath(LocalFile));
+
     MoveFile(TempPath, LocalFile);
     Result := true;
   except
