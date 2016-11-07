@@ -103,12 +103,16 @@ var
    procedure GetFileInfo(temFile: TUpdateFile; FileName: String);
    var
     FileAction: TFileAction;
+    AFormatSettings: TFormatSettings;
    begin
       FileAction := TFileAction.Create(FileName);
+      AFormatSettings := TFormatSettings.Create();
+      AFormatSettings.DateSeparator := '-';
+      AFormatSettings.ShortDateFormat := 'yyyy-MM-dd';
       try
         temFile.Version := FileAction.GetFileVersionAsText;
         temFile.FileSize := inttostr(FileAction.GetFileSize);
-        temFile.ModyDatetime := DatetimeTostr(Fileaction.GetFileDate);
+        temFile.ModyDatetime := DatetimeTostr(Fileaction.GetFileDate, AFormatSettings);
       finally
         freeandnil(FileAction);
       end;
