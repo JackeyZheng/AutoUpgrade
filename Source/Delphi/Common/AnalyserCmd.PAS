@@ -176,6 +176,15 @@ begin
       NewUpdate := TFileUpdate.Create;
       NewUpdate.Assign(Update);
       Result := CreateUpdateDecorator(NewUpdate);
+    end
+    else
+    begin
+      if (FileAction.GetFileDate < Update.NewDate) then
+      begin
+        NewUpdate := TFileUpdate.Create;
+        NewUpdate.Assign(Update);
+        Result := CreateUpdateDecorator(NewUpdate);
+      end;
     end;
   finally
     FreeAndNil(FileAction);

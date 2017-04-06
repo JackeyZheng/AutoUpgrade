@@ -87,6 +87,7 @@ type
     procedure OnStatuse(ASender: TObject; const AStatus: TIdStatus; const AStatusText: string);
     Function CreateTransfer(URL: String):TTransfer;
     procedure InitAppInfo;
+    procedure ShowWhatsNew;
     procedure UpdaeNext(temp: TStrings);
   public
     { Public declarations }
@@ -170,6 +171,7 @@ begin
   // TODO -cMM: TfrmAutoUpdate.CheckUpdate default body inserted
   FileAction := TFileAction.Create(Application.ExeName);
   try
+    atpgrdr1.InfoFileURL := 'http://update.68803990.com/AutoUpgrade/UpdateInfo.TXT';
     atpgrdr1.VersionNumber := FileAction.GetFileVersionAsText;
     Self.Caption := Format('金格网自动更新程序【版本%s】', [atpgrdr1.VersionNumber]);
     if AppInfo.ProxyServer <> '' then
@@ -324,6 +326,8 @@ begin
 
   Memo1.Lines.Add('');
   Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
+  Sleep(1000);
+  ShowWhatsNew;
   self.cmdPrev.Enabled := false;
   self.cmdNext.Enabled := false;
   Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
@@ -452,6 +456,15 @@ begin
   if (Assigned(AppInfo)) then AppInfo.Free;
   AppInfo := TIniAppInfo.Create(ExtractFilePath(Application.ExeName) + 'UpdateApps.ini',
                 lbAppList.Items[lbAppList.ItemIndex]);
+end;
+
+procedure TfrmAutoUpdate.ShowWhatsNew;
+var
+  FileName: String;
+begin
+  // TODO -cMM: TfrmAutoUpdate.ShowWhatsNew default body inserted
+  FileName := ExtractFilePath(Application.ExeName) + 'What''s New.txt';
+  Memo1.Lines.LoadFromFile(FileName);
 end;
 
 procedure TfrmAutoUpdate.UpdaeNext(temp: TStrings);

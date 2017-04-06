@@ -130,7 +130,7 @@ function TXMLAnalyse.AnalyseData(Stream: TStream): TStrings;
 var
   Xml: IXMLDocument;
   RootNode, Node: IXMLNode;
-  i, Index: Integer;
+  i: Integer;
   Update: TUpdate;
   tmpUpdate: TUpdate;
   RetList: TStringList;
@@ -173,7 +173,7 @@ begin
     tmpUpdate := Update.Analyse;
     if (Assigned(tmpUpdate)) then
     begin
-      Index := RetList.AddObject(Format('%s  文件大小：[%dK]', [tmpUpdate.FileName, tmpUpdate.NewSize div 1024]), tmpUpdate);
+      RetList.AddObject(Format('%s  文件大小：[%dK]', [tmpUpdate.FileName, tmpUpdate.NewSize div 1024]), tmpUpdate);
     end;
   end;
   Xml := nil;
