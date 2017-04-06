@@ -464,7 +464,8 @@ var
 begin
   // TODO -cMM: TfrmAutoUpdate.ShowWhatsNew default body inserted
   FileName := ExtractFilePath(Application.ExeName) + 'What''s New.txt';
-  Memo1.Lines.LoadFromFile(FileName);
+  if TFile.Exists(FileName) then
+    Memo1.Lines.LoadFromFile(FileName);
 end;
 
 procedure TfrmAutoUpdate.UpdaeNext(temp: TStrings);

@@ -42,6 +42,10 @@ object frmAutoUpdate: TfrmAutoUpdate
       Caption = 'WellCome'
       TabVisible = False
       OnShow = tbsWellComeShow
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label1: TLabel
         Left = 3
         Top = -1
@@ -100,6 +104,10 @@ object frmAutoUpdate: TfrmAutoUpdate
       ImageIndex = 1
       TabVisible = False
       OnShow = tbsGetUpdateShow
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label3: TLabel
         Left = 5
         Top = 192
@@ -175,6 +183,10 @@ object frmAutoUpdate: TfrmAutoUpdate
       Caption = 'tbsFilsh'
       ImageIndex = 3
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label4: TLabel
         Left = 16
         Top = 40
@@ -260,6 +272,10 @@ object frmAutoUpdate: TfrmAutoUpdate
       Caption = 'tbNoUpdate'
       ImageIndex = 4
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label12: TLabel
         Left = 16
         Top = 40
