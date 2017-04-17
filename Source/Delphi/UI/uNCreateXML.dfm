@@ -57,7 +57,7 @@ object FrmNCreateXML: TFrmNCreateXML
     object btn1: TButton
       Left = 3
       Top = 357
-      Width = 89
+      Width = 73
       Height = 33
       Caption = #28155#21152#25991#20214
       TabOrder = 0
@@ -69,17 +69,27 @@ object FrmNCreateXML: TFrmNCreateXML
       Width = 249
       Height = 327
       ItemHeight = 12
+      MultiSelect = True
       TabOrder = 1
       OnClick = ListBox1Click
     end
     object btn2: TButton
-      Left = 163
+      Left = 179
       Top = 357
-      Width = 89
+      Width = 73
       Height = 33
       Caption = #31227#38500#25991#20214
       TabOrder = 2
       OnClick = btn2Click
+    end
+    object btnAddDir: TButton
+      Left = 91
+      Top = 357
+      Width = 73
+      Height = 33
+      Caption = #28155#21152#25991#20214#22841
+      TabOrder = 3
+      OnClick = btnAddDirClick
     end
   end
   object grp2: TGroupBox
@@ -106,7 +116,7 @@ object FrmNCreateXML: TFrmNCreateXML
     object btnSave: TButton
       Left = 18
       Top = 282
-      Width = 517
+      Width = 231
       Height = 32
       Caption = #20445#23384
       TabOrder = 5
@@ -282,6 +292,15 @@ object FrmNCreateXML: TFrmNCreateXML
         TabOrder = 2
       end
     end
+    object btnBatchSave: TButton
+      Left = 274
+      Top = 282
+      Width = 263
+      Height = 32
+      Caption = #25209#37327#35774#32622
+      TabOrder = 6
+      OnClick = btnBatchSaveClick
+    end
   end
   object btnUpdateXML: TButton
     Left = 744
@@ -294,7 +313,7 @@ object FrmNCreateXML: TFrmNCreateXML
   end
   object dlgOpen1: TOpenDialog
     Filter = #25152#26377#25991#20214#31867#22411'|*.*'
-    Options = [ofHideReadOnly, ofAllowMultiSelect, ofPathMustExist, ofEnableSizing]
+    Options = [ofAllowMultiSelect, ofPathMustExist, ofEnableSizing]
     Left = 64
     Top = 344
   end
