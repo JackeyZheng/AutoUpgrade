@@ -76,6 +76,7 @@ type
     TransferFactory: TTransferFactory;
     STime: TDateTime;
     AbortTransfer: Boolean;
+    FBreak: Boolean;
     t: TTestThread;
     procedure CheckUpdate;
     procedure OnAnalyse(Sender: TObject; Count, Current: Integer);
@@ -86,6 +87,7 @@ type
     Procedure GetLocalPath;
     procedure OnStatuse(ASender: TObject; const AStatus: TIdStatus; const AStatusText: string);
     Function CreateTransfer(URL: String):TTransfer;
+    procedure DownloadAndUpdate;
     procedure InitAppInfo;
     procedure ShowWhatsNew;
     procedure UpdaeNext(temp: TStrings);
@@ -130,6 +132,7 @@ end;
 
 procedure TfrmAutoUpdate.Button3Click(Sender: TObject);
 begin
+  FBreak := True;
   Close();
 end;
 
@@ -268,69 +271,73 @@ end;
 
 procedure TfrmAutoUpdate.tbsDownloadShow(Sender: TObject);
 var
-  TransferObj: TTransfer;
-  UpdateObj: TUpdate;
-  i: Integer;
+//  TransferObj: TTransfer;
+//  UpdateObj: TUpdate;
+//  i: Integer;
+  Thread: TThread;
 begin
-  self.cmdPrev.Enabled := false;
-  self.cmdNext.Enabled := false;
-  pbMaster.Max := lbUpdateList.Items.Count * 3;
-  pbMaster.Position := 0;
-  pbDetail.Position := 0;
-  memo1.Perform(EM_SCROLLCARET, 0, 0 );
-  Memo1.Lines.Add('开始从指定的服务器上下载更新文件。。。。');
-  GetTempPath;
-  GetLocalPath;
-  for i := 0 to lbUpdateList.Items.Count - 1 do
-  begin
-    pbMaster.StepIt;
-    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
-    UpdateObj.TempPath := strTempPath + UpdateObj.FileName;
-    UpdateObj.LocalFile := strLocalpath + UpdateObj.LocalFile;
-    strCurrentFile := UpdateObj.FileName;
-    TransferObj := CreateTransfer(AppInfo.UpdateServer + Updateobj.UpdateURL);
-    TransferObj.OnTransferStart := DownloadBegin;
-    TransferObj.OnTransferEnd := DownloadEnd;
-    TransferObj.OnTransfer := OnDownload;
-    TransferObj.OnStatus := OnStatuse;
-    UpdateObj.TransferObj := TransferObj;
-    UpdateObj.Download(UpdateObj.TempPath);
-  end;
-
-  lblStatuse.Caption := '';
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('更新文件。。。。。。');
-  for i := 0 to lbUpdateList.Items.Count - 1 do
-  begin
-    pbMaster.StepIt;
-    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
-    if (UpdateObj.UpdateType = upExecute) then
-      Memo1.Lines.Add(Format('正在执行 %s 文件', [UpdateObj.FileName]))
-    else
-      Memo1.Lines.Add(Format('正在更新%s文件', [UpdateObj.FileName]));
-    if UpdateObj.UpdateIt then
-      Memo1.Lines.Add(Format('文件 %s 更新完成!', [UpdateObj.FileName]))
-    else
-      Memo1.Lines.Add(Format('文件 %s 更新失败!!', [UpdateObj.FileName]));
-  end;
-
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('删除临时文件。。。。。。');
-  for i := 0 to lbUpdateList.Items.Count - 1 do
-  begin
-    pbMaster.StepIt;
-    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
-    DeleteFile(UpdateObj.TempPath);
-  end;
-  Memo1.Lines.Add('临时文件已删除');
-
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
-  Sleep(1000);
-  ShowWhatsNew;
-  self.cmdPrev.Enabled := false;
-  self.cmdNext.Enabled := false;
-  Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
+  Thread := TThread.CreateAnonymousThread(DownloadAndUpdate);
+  Thread.FreeOnTerminate := True;
+  Thread.Start;
+//  self.cmdPrev.Enabled := false;
+//  self.cmdNext.Enabled := false;
+//  pbMaster.Max := lbUpdateList.Items.Count * 3;
+//  pbMaster.Position := 0;
+//  pbDetail.Position := 0;
+//  memo1.Perform(EM_SCROLLCARET, 0, 0 );
+//  Memo1.Lines.Add('开始从指定的服务器上下载更新文件。。。。');
+//  GetTempPath;
+//  GetLocalPath;
+//  for i := 0 to lbUpdateList.Items.Count - 1 do
+//  begin
+//    pbMaster.StepIt;
+//    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+//    UpdateObj.TempPath := strTempPath + UpdateObj.FileName;
+//    UpdateObj.LocalFile := strLocalpath + UpdateObj.LocalFile;
+//    strCurrentFile := UpdateObj.FileName;
+//    TransferObj := CreateTransfer(AppInfo.UpdateServer + Updateobj.UpdateURL);
+//    TransferObj.OnTransferStart := DownloadBegin;
+//    TransferObj.OnTransferEnd := DownloadEnd;
+//    TransferObj.OnTransfer := OnDownload;
+//    TransferObj.OnStatus := OnStatuse;
+//    UpdateObj.TransferObj := TransferObj;
+//    UpdateObj.Download(UpdateObj.TempPath);
+//  end;
+//
+//  lblStatuse.Caption := '';
+//  Memo1.Lines.Add('');
+//  Memo1.Lines.Add('更新文件。。。。。。');
+//  for i := 0 to lbUpdateList.Items.Count - 1 do
+//  begin
+//    pbMaster.StepIt;
+//    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+//    if (UpdateObj.UpdateType = upExecute) then
+//      Memo1.Lines.Add(Format('正在执行 %s 文件', [UpdateObj.FileName]))
+//    else
+//      Memo1.Lines.Add(Format('正在更新%s文件', [UpdateObj.FileName]));
+//    if UpdateObj.UpdateIt then
+//      Memo1.Lines.Add(Format('文件 %s 更新完成!', [UpdateObj.FileName]))
+//    else
+//      Memo1.Lines.Add(Format('文件 %s 更新失败!!', [UpdateObj.FileName]));
+//  end;
+//
+//  Memo1.Lines.Add('');
+//  Memo1.Lines.Add('删除临时文件。。。。。。');
+//  for i := 0 to lbUpdateList.Items.Count - 1 do
+//  begin
+//    pbMaster.StepIt;
+//    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+//    DeleteFile(UpdateObj.TempPath);
+//  end;
+//  Memo1.Lines.Add('临时文件已删除');
+//
+//  Memo1.Lines.Add('');
+//  Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
+//  Sleep(1000);
+//  ShowWhatsNew;
+//  self.cmdPrev.Enabled := false;
+//  self.cmdNext.Enabled := false;
+//  Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
 end;
 
 procedure TfrmAutoUpdate.DownloadBegin(Sender: TObject;
@@ -466,6 +473,77 @@ begin
   FileName := ExtractFilePath(Application.ExeName) + 'What''s New.txt';
   if TFile.Exists(FileName) then
     Memo1.Lines.LoadFromFile(FileName);
+end;
+
+procedure TfrmAutoUpdate.DownloadAndUpdate;
+var
+  TransferObj: TTransfer;
+  UpdateObj: TUpdate;
+  i: Integer;
+begin
+  FBreak := False;
+  self.cmdPrev.Enabled := false;
+  self.cmdNext.Enabled := false;
+  pbMaster.Max := lbUpdateList.Items.Count * 3;
+  pbMaster.Position := 0;
+  pbDetail.Position := 0;
+  memo1.Perform(EM_SCROLLCARET, 0, 0 );
+  Memo1.Lines.Add('开始从指定的服务器上下载更新文件。。。。');
+  GetTempPath;
+  GetLocalPath;
+  for i := 0 to lbUpdateList.Items.Count - 1 do
+  begin
+    pbMaster.StepIt;
+    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+    UpdateObj.TempPath := strTempPath + UpdateObj.FileName;
+    UpdateObj.LocalFile := strLocalpath + UpdateObj.LocalFile;
+    strCurrentFile := UpdateObj.FileName;
+    TransferObj := CreateTransfer(AppInfo.UpdateServer + Updateobj.UpdateURL);
+    TransferObj.OnTransferStart := DownloadBegin;
+    TransferObj.OnTransferEnd := DownloadEnd;
+    TransferObj.OnTransfer := OnDownload;
+    TransferObj.OnStatus := OnStatuse;
+    UpdateObj.TransferObj := TransferObj;
+    UpdateObj.Download(UpdateObj.TempPath);
+    if FBreak then
+      Exit;
+  end;
+
+  lblStatuse.Caption := '';
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('更新文件。。。。。。');
+  for i := 0 to lbUpdateList.Items.Count - 1 do
+  begin
+    pbMaster.StepIt;
+    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+    if (UpdateObj.UpdateType = upExecute) then
+      Memo1.Lines.Add(Format('正在执行 %s 文件', [UpdateObj.FileName]))
+    else
+      Memo1.Lines.Add(Format('正在更新%s文件', [UpdateObj.FileName]));
+    if UpdateObj.UpdateIt then
+      Memo1.Lines.Add(Format('文件 %s 更新完成!', [UpdateObj.FileName]))
+    else
+      Memo1.Lines.Add(Format('文件 %s 更新失败!!', [UpdateObj.FileName]));
+  end;
+
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('删除临时文件。。。。。。');
+  for i := 0 to lbUpdateList.Items.Count - 1 do
+  begin
+    pbMaster.StepIt;
+    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+    DeleteFile(UpdateObj.TempPath);
+  end;
+  Memo1.Lines.Add('临时文件已删除');
+
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
+  Sleep(1000);
+  ShowWhatsNew;
+  self.cmdPrev.Enabled := false;
+  self.cmdNext.Enabled := false;
+  Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
+  FBreak := True;
 end;
 
 procedure TfrmAutoUpdate.UpdaeNext(temp: TStrings);
