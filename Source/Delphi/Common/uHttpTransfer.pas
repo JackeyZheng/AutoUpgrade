@@ -93,6 +93,7 @@ begin
         FIdHTTP.OnWork := nil;
         FIdHTTP.OnWorkEnd := nil;
       end;
+      FidHttp.ReadTimeout := 3000;
       FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
     finally
       FreeAndNil(FileStream);
