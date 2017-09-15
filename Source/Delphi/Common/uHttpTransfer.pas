@@ -68,18 +68,24 @@ procedure THTTPTransfer.Get(FileName: String);
 var
   temp: Int64;
   FileStream: TFileStream;
+  memstream: TMemoryStream;
 begin
   try
     if not DirectoryExists(ExtractFilePath(FileName)) then
       TDirectory.CreateDirectory(ExtractFilePath(FileName));
     if Tfile.Exists(FileName) then
-      FileStream := TFileStream.Create(FileName, fmOpenWrite)
+      FileStream := TFileStream.Create(FileName, fmOpenReadWrite)
     else
       FileStream := TFileStream.Create(FileName, fmCreate);
 
+    FileStream.Seek(0, soEnd);
+    memstream := TMemoryStream.Create;
     try
+      FIdHTTP.Request.Range := '';
+      FidHttp.HandleRedirects := true;
       FidHttp.Head(Self.URI.URLEncode(Self.URL));
       temp := FIdHTTP.Response.ContentLength;
+
 
       if temp > 10240 then
       begin
@@ -93,10 +99,18 @@ begin
         FIdHTTP.OnWork := nil;
         FIdHTTP.OnWorkEnd := nil;
       end;
-      FidHttp.ReadTimeout := 3000;
-      FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
+      if FileStream.Position - FIdHTTP.Response.ContentLength < 0 then
+      begin
+        FidHttp.ReadTimeout := 3000;
+        FIdHttp.Request.Range := Format('%d-%d', [FileStream.Position, FIdHTTP.Response.ContentLength]);
+
+        //FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
+        FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream);
+        memstream.SaveToStream(FileStream);
+      end;
     finally
       FreeAndNil(FileStream);
+      FreeAndNil(memstream);
     end;
   except
     raise;
