@@ -331,7 +331,7 @@ begin
   if ListBox1.Items.Count <= 0 then
     Exit;
 
-  SavePathFileName := edtDir.Text + 'UpdateList.XML';
+  SavePathFileName := edtDir.Text + 'UpdateList.xml';
   ixd := NewXmlDocument();
 
   root := ixd.AddChild('UpdateLists');
