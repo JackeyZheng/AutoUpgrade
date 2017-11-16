@@ -101,11 +101,17 @@ begin
       end;
       if FileStream.Position - FIdHTTP.Response.ContentLength < 0 then
       begin
-        FidHttp.ReadTimeout := 3000;
+        FidHttp.HandleRedirects := True;
+        FidHttp.ConnectTimeout := 3000;
+        FidHttp.ReadTimeout := 1000;
         FIdHttp.Request.Range := Format('%d-%d', [FileStream.Position, FIdHTTP.Response.ContentLength]);
 
         //FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
-        FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream);
+        try
+          FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream);
+        except
+          FidHttp.Get(Self.URI.URLEncode(Self.URL), memstream);
+        end;
         memstream.SaveToStream(FileStream);
       end;
     finally
