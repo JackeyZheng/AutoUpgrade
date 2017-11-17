@@ -110,7 +110,7 @@ begin
         try
           FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream);
         except
-          FidHttp.Get(Self.URI.URLEncode(Self.URL), memstream);
+          FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream);
         end;
         memstream.SaveToStream(FileStream);
       end;
