@@ -3,11 +3,13 @@ unit uHttpTransfer;
 interface
 
 uses
-  Transfer, IdComponent, System.Classes, IdHTTP, System.SysUtils, IdURI;
+  Transfer, IdComponent, System.Classes, IdHTTP, System.SysUtils, IdURI,
+  IdAntiFreezeBase, Vcl.IdAntiFreeze;
 
 type
   THTTPTransfer = class(TTransfer)
   private
+    //FIdAntiFreeze: TidAntiFreeze;
     FidHttp: TIdHttp;
   protected
     function  GetOnStatus: TIdStatusEvent; override;
@@ -34,6 +36,7 @@ constructor THTTPTransfer.Create;
 begin
   inherited;
   FidHttp := TIdHTTP.Create(nil);
+  //FIdAntiFreeze := TidAntiFreeze.Create(nil);
   // TODO -cMM: THTTPTransfer.Create default body inserted
 end;
 
@@ -103,7 +106,8 @@ begin
       begin
         FidHttp.HandleRedirects := True;
         FidHttp.ConnectTimeout := 3000;
-        FidHttp.ReadTimeout := 1000;
+        FidHttp.ReadTimeout := 3000;
+
         FIdHttp.Request.Range := Format('%d-%d', [FileStream.Position, FIdHTTP.Response.ContentLength]);
 
         //FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
