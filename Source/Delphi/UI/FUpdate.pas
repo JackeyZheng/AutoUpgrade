@@ -176,7 +176,7 @@ begin
   try
     atpgrdr1.InfoFileURL := 'http://update.68803990.com/AutoUpgrade/UpdateInfo.TXT';
     atpgrdr1.VersionNumber := FileAction.GetFileVersionAsText;
-    Self.Caption := Format('金格网自动更新程序【版本%s】', [atpgrdr1.VersionNumber]);
+    Self.Caption := Format('在线自动更新程序【版本%s】', [atpgrdr1.VersionNumber]);
     if AppInfo.ProxyServer <> '' then
     begin
       atpgrdr1.Proxy.ProxyServer := AppInfo.ProxyServer;

@@ -28,7 +28,7 @@ object frmAutoUpdate: TfrmAutoUpdate
     Top = 8
     Width = 387
     Height = 261
-    ActivePage = tbsDownload
+    ActivePage = tbsWellCome
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -12
@@ -45,9 +45,9 @@ object frmAutoUpdate: TfrmAutoUpdate
       object Label1: TLabel
         Left = 3
         Top = -1
-        Width = 240
+        Width = 192
         Height = 22
-        Caption = #27426#36814#20351#29992#37329#26684#32593#22312#32447#33258#21160#26356#26032#31995#32479
+        Caption = #27426#36814#20351#29992#22312#32447#33258#21160#26356#26032#31995#32479
         Font.Charset = ANSI_CHARSET
         Font.Color = clBlack
         Font.Height = -16
@@ -411,7 +411,7 @@ object frmAutoUpdate: TfrmAutoUpdate
     InfoFile.UpgradeMsg = #33258#21160#26356#26032'1.1'#29256#26412#13#10'1. *'#22686#21152'HTTP'#25903#25345#13#10'2. *'#25903#25345#33258#21160#26356#26032
     InfoFileURL = 'http://update.68803990.com/AutoUpgrade/UpdateInfo.TXT'
     VersionControl = byNumber
-    VersionDate = '05/25/2017'
+    VersionDate = '12/14/2017'
     VersionDateAutoSet = True
     VersionNumber = '1.0'
     Left = 16
