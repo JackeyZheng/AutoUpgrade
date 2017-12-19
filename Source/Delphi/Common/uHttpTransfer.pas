@@ -70,7 +70,7 @@ var
   FileStream: TFileStream;
   memstream: TMemoryStream;
 begin
-  try
+//  try
     if not DirectoryExists(ExtractFilePath(FileName)) then
       TDirectory.CreateDirectory(ExtractFilePath(FileName));
     if Tfile.Exists(FileName) then
@@ -87,40 +87,47 @@ begin
       temp := FIdHTTP.Response.ContentLength;
 
 
-      if temp > 10240 then
+//      if temp > 10240 then
+//      begin
+
+//      end
+//      else
+//      begin
+//        FIdHTTP.OnWorkBegin := nil;
+//        FIdHTTP.OnWork := nil;
+//        FIdHTTP.OnWorkEnd := nil;
+//      end;
+      if FileStream.Position - FIdHTTP.Response.ContentLength < 0 then
       begin
         FIdHTTP.OnWorkBegin := Self.WorkStart;
         FIdHTTP.OnWork := Self.Work;
         FIdHTTP.OnWorkEnd := Self.WorkEnd;
-      end
-      else
-      begin
-        FIdHTTP.OnWorkBegin := nil;
-        FIdHTTP.OnWork := nil;
-        FIdHTTP.OnWorkEnd := nil;
-      end;
-      if FileStream.Position - FIdHTTP.Response.ContentLength < 0 then
-      begin
-        FidHttp.HandleRedirects := True;
+
         FidHttp.ConnectTimeout := 3000;
-        FidHttp.ReadTimeout := 1000;
+        FidHttp.ReadTimeout := 3000;
         FIdHttp.Request.Range := Format('%d-%d', [FileStream.Position, FIdHTTP.Response.ContentLength]);
 
         //FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
         try
           FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream);
         except
-          FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream);
+          if (FidHttp.ResponseCode >= 200) and (FidHttp.ResponseCode < 300) then
+            FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream)
+          else
+            raise;
         end;
         memstream.SaveToStream(FileStream);
-      end;
+      end
+      else
+        OnTransferEnd(nil);
     finally
       FreeAndNil(FileStream);
       FreeAndNil(memstream);
     end;
-  except
-    raise;
-  end;
+    Sleep(100);
+//  except
+//    raise;
+//  end;
 end;
 
 procedure THTTPTransfer.Get(Stream: TStream);
