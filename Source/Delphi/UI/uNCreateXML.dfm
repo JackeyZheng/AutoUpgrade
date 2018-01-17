@@ -96,7 +96,7 @@ object FrmNCreateXML: TFrmNCreateXML
     Left = 281
     Top = 54
     Width = 552
-    Height = 339
+    Height = 351
     Caption = #23646#24615#35774#32622
     TabOrder = 2
     object Labellbl2: TLabel
@@ -115,7 +115,7 @@ object FrmNCreateXML: TFrmNCreateXML
     end
     object btnSave: TButton
       Left = 18
-      Top = 282
+      Top = 301
       Width = 231
       Height = 32
       Caption = #20445#23384
@@ -124,7 +124,7 @@ object FrmNCreateXML: TFrmNCreateXML
     end
     object grp3: TGroupBox
       Left = 20
-      Top = 101
+      Top = 117
       Width = 229
       Height = 167
       Caption = #26816#26597#31867#22411
@@ -212,7 +212,7 @@ object FrmNCreateXML: TFrmNCreateXML
     end
     object grp5: TGroupBox
       Left = 276
-      Top = 101
+      Top = 117
       Width = 261
       Height = 167
       Caption = #30446#26631#25991#20214
@@ -294,17 +294,28 @@ object FrmNCreateXML: TFrmNCreateXML
     end
     object btnBatchSave: TButton
       Left = 274
-      Top = 282
+      Top = 301
       Width = 263
       Height = 32
       Caption = #25209#37327#35774#32622
       TabOrder = 6
       OnClick = btnBatchSaveClick
     end
+    object lbledtFilter: TLabeledEdit
+      Left = 364
+      Top = 87
+      Width = 160
+      Height = 20
+      EditLabel.Width = 60
+      EditLabel.Height = 12
+      EditLabel.Caption = #36807#28388#21069#32512#65306
+      LabelPosition = lpLeft
+      TabOrder = 7
+    end
   end
   object btnUpdateXML: TButton
     Left = 744
-    Top = 399
+    Top = 416
     Width = 89
     Height = 33
     Caption = #29983#25104'XML'#25991#20214

@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls,
-  Vcl.FileCtrl, ShlwApi, Xml.XMLIntf, Xml.XMLDoc;
+  Vcl.FileCtrl, ShlwApi, Xml.XMLIntf, Xml.XMLDoc, Vcl.ExtCtrls;
 
 type
   TUpdateFile = class(TInterfacedObject)
@@ -19,6 +19,7 @@ type
     FFileSize: string;
     FDeskFile: string;
     FDeskDir: string;
+    function isBinFile(FileName: string): Boolean;
   public
     constructor Create;
     property ChkType: string read FChkType write FChkType;
@@ -71,6 +72,7 @@ type
     btn2: TButton;
     btnBatchSave: TButton;
     btnAddDir: TButton;
+    lbledtFilter: TLabeledEdit;
     procedure btnOpenClick(Sender: TObject);
     procedure btn1Click(Sender: TObject);
     procedure edtDirChange(Sender: TObject);
@@ -88,6 +90,9 @@ type
     { Public declarations }
   end;
 
+  const
+    binFiles: array[0..3] of string = ('.EXE', '.DLL', '.BPL', '.OCX');
+
 procedure GetChildFileList(AStrings: TStrings; ASourFile, FileName: string); // ²éÕÒ×ÓÄ¿Â¼
 
 var
@@ -98,7 +103,7 @@ implementation
 {$R *.dfm}
 
 uses
-  uFileAction, System.IOUtils;
+  uFileAction, System.IOUtils, System.StrUtils;
 
 procedure GetFileInfo(temFile: TUpdateFile; FileName: string);
 var
@@ -110,7 +115,16 @@ begin
   AFormatSettings.DateSeparator := '-';
   AFormatSettings.ShortDateFormat := 'yyyy-MM-dd';
   try
-    temFile.Version := FileAction.GetFileVersionAsText;
+    if temFile.isBinFile(FileName) then
+    begin
+      temFile.ChkType := '1';
+      temFile.Version := FileAction.GetFileVersionAsText
+    end
+    else
+    begin
+      temFile.Version := '0.0.0.0';
+      temFile.ChkType := '4';
+    end;
     temFile.FileSize := inttostr(FileAction.GetFileSize);
     temFile.ModyDatetime := DatetimeTostr(FileAction.GetFileDate, AFormatSettings);
   finally
@@ -311,6 +325,12 @@ begin
           UFile.FileURL := newfile;
           UFile.FileName := ExtractFileName(tempFiles[i]);
           UFile.DeskFile := ExtractFileName(tempFiles[i]);
+          UFile.DeskDir := StringReplace(UFile.FileURL, lbledtFilter.Text, '', [rfIgnoreCase]);
+          UFile.DeskDir := StringReplace(UFile.DeskDir, UFile.FileName, '', [rfIgnoreCase]);
+          if Length(UFile.DeskDir) > 0 then
+          begin
+            UFile.DeskDir := LeftStr(UFile.DeskDir, Length(UFile.DeskDir) - 1);
+          end;
           GetFileInfo(UFile, tempFiles[i]);
           Listbox1.AddItem(newfile, UFile);
         end;
@@ -466,6 +486,22 @@ begin
   FUpdateType := '0';
   FVersion := '1';
   FDeskDir := '';
+end;
+
+function TUpdateFile.isBinFile(FileName: string): Boolean;
+var
+  i: Integer;
+begin
+  Result := false;
+  // TODO -cMM: TUpdateFile.isBinFile default body inserted
+  for I := 0 to Length(binFiles) do
+  begin
+    if UpperCase(TPath.GetExtension(FileName)) = binFiles[i] then
+    begin
+      Result := True;
+      exit;
+    end;
+  end;
 end;
 
 end.
