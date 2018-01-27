@@ -62,6 +62,7 @@ type
     procedure Button3Click(Sender: TObject);
     procedure PcWizardChange(Sender: TObject);
     procedure Button5Click(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure tbsGetUpdateShow(Sender: TObject);
     procedure tbsWellComeShow(Sender: TObject);
@@ -101,7 +102,7 @@ var
 
 implementation
 
-uses FSeting, Update, uFileAction, System.IOUtils;
+uses FSeting, Update, uFileAction, System.IOUtils, Winapi.ShellAPI;
 
 Var
   AverageSpeed: Double = 0;
@@ -482,6 +483,21 @@ begin
   self.cmdNext.Enabled := false;
   Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
   FBreak := True;
+end;
+
+procedure TfrmAutoUpdate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+var
+  ExeFilePath: string;
+begin
+  ExeFilePath := IncludeTrailingBackslash(AppInfo.LocalPath) + AppInfo.AppExeFile;
+  CanClose := True;
+  if Application.MessageBox('是否运行程序？', '系统提示', MB_YESNO + MB_ICONQUESTION) =
+    IDYES then
+  begin
+    ShellExecute(Application.Handle, 'Open',
+          PWideChar(ExeFilePath),
+          nil, nil, SW_NORMAL);
+  end;
 end;
 
 procedure TfrmAutoUpdate.UpdaeNext(temp: TStrings);
