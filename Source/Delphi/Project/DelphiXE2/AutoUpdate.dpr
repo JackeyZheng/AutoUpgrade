@@ -9,7 +9,7 @@ uses
   FmxUtils in '..\..\Common\FmxUtils.pas',
   Transfer in '..\..\Common\Transfer.pas',
   uFileAction in '..\..\Common\uFileAction.pas',
-  Update in '..\..\Common\Update.PAS',
+  JGWUpdate in '..\..\Common\JGWUpdate.PAS',
   FSeting in '..\..\UI\FSeting.pas' {frmSeting},
   FUpdate in '..\..\UI\FUpdate.pas' {frmAutoUpdate},
   uHttpTransfer in '..\..\Common\uHttpTransfer.pas';

@@ -61,9 +61,10 @@ type
   TXMLAnalyse = class(TAnalyse)
   private
     Fstr: array of string;
-    function AnalyseData(Stream: TStream): TStrings; override;
     procedure CreateFileDir(path: string);
     procedure arrayString(s:string; dot:char);
+  protected
+    function AnalyseData(Stream: TStream): TStrings; override;
   public
   end;
   
@@ -81,7 +82,7 @@ type
 implementation
 
 uses
-  IdUri, XMLDoc, Update, ActiveX;
+  IdUri, XMLDoc, JGWUpdate, ActiveX;
 {
 ********************************* TXMLAnalyse **********************************
 }

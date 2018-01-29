@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Windows, Messages, Classes, Graphics, Controls,
-  Forms, Dialogs, Update;
+  Forms, Dialogs, JGWUpdate;
 
 type
   TAnalyseCmd = class(TObject)

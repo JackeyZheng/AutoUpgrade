@@ -1,4 +1,4 @@
-unit Update;
+unit JGWUpdate;
 
 interface
 
@@ -165,7 +165,12 @@ type
   end;
   
   TFileUpdate = class(TUpdate)
+  protected
   public
+    /// <summary>
+    ///   下载数据到指定的文件
+    /// </summary>
+    procedure Download(FileName: String); overload; override;
     /// <summary>
     ///   文件更新的基础实现类，它实现了基础的更新呢信息和操作。在它上增加装饰类实现Copy更新和执行更新。
     /// </summary>
@@ -173,10 +178,6 @@ type
     ///   TUpdate
     /// </seealso>
     function Analyse: TUpdate; override;
-    /// <summary>
-    ///   下载数据到指定的文件
-    /// </summary>
-    procedure Download(FileName: String); overload; override;
     /// <summary>
     ///   下载数据到liu
     /// </summary>
@@ -246,6 +247,7 @@ type
   ///   Copy方式实现类
   /// </summary>
   TCopyUpdate = class(TUpdateDecorator)
+  protected
   public
     function Analyse: TUpdate; override;
     procedure Download(FileName: String); overload; override;
@@ -257,6 +259,7 @@ type
   ///   执行方式实现类
   /// </summary>
   TExecuteUpdate = class(TUpdateDecorator)
+  protected
   public
     function Analyse: TUpdate; override;
     procedure Download(FileName: String); overload; override;
@@ -410,7 +413,7 @@ var
   Anaslyse: TAnalyseCmd;
 begin
   Anaslyse := TAnalyseCmdFactory.CreateAnalyseCmd(ChkTypeArrar[Integer(self.chkType)]);
-  Result := Anaslyse.Run(self);
+  Result := Anaslyse.Run(self as TUpdate);
   FreeAndNil(Anaslyse);
 end;
 
