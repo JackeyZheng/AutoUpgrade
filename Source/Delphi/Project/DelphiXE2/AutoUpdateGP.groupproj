@@ -12,6 +12,9 @@
 			<Projects Include="JGWUpdater.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="..\..\Test\Project\XE2\TestProject.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
 		<Target Name="JGWUpdater:Make">
 			<MSBuild Projects="JGWUpdater.dproj" Targets="Make"/>
 		</Target>
+		<Target Name="TestProject">
+			<MSBuild Projects="..\..\Test\Project\XE2\TestProject.dproj"/>
+		</Target>
+		<Target Name="TestProject:Clean">
+			<MSBuild Projects="..\..\Test\Project\XE2\TestProject.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="TestProject:Make">
+			<MSBuild Projects="..\..\Test\Project\XE2\TestProject.dproj" Targets="Make"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="AutoUpdate;AutoCreateXML;JGWUpdater"/>
+			<CallTarget Targets="AutoUpdate;AutoCreateXML;JGWUpdater;TestProject"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="AutoUpdate:Clean;AutoCreateXML:Clean;JGWUpdater:Clean"/>
+			<CallTarget Targets="AutoUpdate:Clean;AutoCreateXML:Clean;JGWUpdater:Clean;TestProject:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="AutoUpdate:Make;AutoCreateXML:Make;JGWUpdater:Make"/>
+			<CallTarget Targets="AutoUpdate:Make;AutoCreateXML:Make;JGWUpdater:Make;TestProject:Make"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>
