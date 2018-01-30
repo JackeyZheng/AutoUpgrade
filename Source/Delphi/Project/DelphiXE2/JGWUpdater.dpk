@@ -44,6 +44,7 @@ contains
   FmxUtils in '..\..\Common\FmxUtils.pas',
   Transfer in '..\..\Common\Transfer.pas',
   uHttpTransfer in '..\..\Common\uHttpTransfer.pas',
-  JGWUpdate in '..\..\Common\JGWUpdate.PAS';
+  JGWUpdate in '..\..\Common\JGWUpdate.PAS',
+  uCheckUpdate in '..\..\Common\uCheckUpdate.pas';
 
 end.

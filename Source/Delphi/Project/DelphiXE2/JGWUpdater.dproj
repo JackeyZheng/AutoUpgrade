@@ -91,7 +91,8 @@
 			<DCCReference Include="..\..\Common\FmxUtils.pas"/>
 			<DCCReference Include="..\..\Common\Transfer.pas"/>
 			<DCCReference Include="..\..\Common\uHttpTransfer.pas"/>
-			<DCCReference Include="..\..\Common\JGWUpdate.pas"/>
+			<DCCReference Include="..\..\Common\JGWUpdate.PAS"/>
+			<DCCReference Include="..\..\Common\uCheckUpdate.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

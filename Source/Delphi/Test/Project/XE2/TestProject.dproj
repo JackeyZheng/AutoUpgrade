@@ -42,12 +42,11 @@
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
 			<Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
-			<DCC_UsePackage>FlexCel_Core;fmx;IndySystem;FlexCel_Report;DataSnapClient;DataSnapServer;DataSnapCommon;DBXInterBaseDriver;DataSnapProviderClient;DbxCommonDriver;dbxcds;DBXOracleDriver;CustomIPTransport;dsnap;IndyCore;fmxase;FMX_FlexCel_Core;inetdbxpress;IPIndyImpl;bindcompfmx;rtl;dbrtl;DbxClientDriver;bindcomp;inetdb;FlexCel_Render;xmlrtl;IndyProtocols;DBXMySQLDriver;bindengine;soaprtl;aurelius;FlexCel_Pdf;FMX_FlexCel_Components;DBXInformixDriver;DBXFirebirdDriver;inet;fmxobj;DBXSybaseASADriver;fmxdae;FlexCel_XlsAdapter;dbexpress;DataSnapIndy10ServerTransport;$(DCC_UsePackage)</DCC_UsePackage>
 			<DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
 			<DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win64)'!=''">
-			<DCC_UsePackage>dxBarDBNavRS16;cxLibraryRS16;dxLayoutControlRS16;dxCoreRS16;dxSpreadSheetRS16;cxExportRS16;dxPDFViewerRS16;dxBarRS16;TeeDB;dxDBXServerModeRS16;cxTreeListdxBarPopupMenuRS16;dxPsPrVwAdvRS16;dxRibbonCustomizationFormRS16;dxPSCoreRS16;dxPSdxSpreadSheetLnkRS16;cxPageControlRS16;DBXSybaseASEDriver;dxRibbonRS16;VCL_FlexCel_Components;vclimg;dxSpreadSheetConditionalFormattingDialogsRS16;dxPScxTLLnkRS16;cxTreeListRS16;dxComnRS16;vcldb;dxOfficeCoreRS16;dxADOServerModeRS16;vcldsnap;dxBarExtDBItemsRS16;DBXDb2Driver;vcl;DBXMSSQLDriver;cxDataRS16;dxPSDBTeeChartRS16;webdsnap;dxSpreadSheetReportDesignerRS16;dxBarExtItemsRS16;dxPSLnksRS16;dxPSdxPDFViewerLnkRS16;adortl;dxPSTeeChartRS16;dxPSdxLCLnkRS16;dxPScxExtCommonRS16;Tee;DBXOdbcDriver;dxPScxCommonRS16;dxPSPrVwRibbonRS16;vclactnband;TeeUI;bindcompvcl;vclie;VCL_FlexCel_Core;vcltouch;websnap;dxServerModeRS16;cxEditorsRS16;VclSmp;dxTabbedMDIRS16;dsnapcon;dxHttpIndyRequestRS16;dxThemeRS16;dxPScxPCProdRS16;vclx;dxGDIPlusRS16;$(DCC_UsePackage)</DCC_UsePackage>
+			<DCC_UsePackage>dxBarDBNavRS16;cxLibraryRS16;dxLayoutControlRS16;dxCoreRS16;dxSpreadSheetRS16;cxExportRS16;dxPDFViewerRS16;dxBarRS16;dxDBXServerModeRS16;cxTreeListdxBarPopupMenuRS16;dxPsPrVwAdvRS16;dxRibbonCustomizationFormRS16;dxPSCoreRS16;dxPSdxSpreadSheetLnkRS16;cxPageControlRS16;DBXSybaseASEDriver;dxRibbonRS16;VCL_FlexCel_Components;vclimg;dxSpreadSheetConditionalFormattingDialogsRS16;dxPScxTLLnkRS16;cxTreeListRS16;dxComnRS16;vcldb;dxOfficeCoreRS16;dxADOServerModeRS16;vcldsnap;dxBarExtDBItemsRS16;DBXDb2Driver;vcl;DBXMSSQLDriver;cxDataRS16;dxPSDBTeeChartRS16;webdsnap;dxSpreadSheetReportDesignerRS16;dxBarExtItemsRS16;dxPSLnksRS16;dxPSdxPDFViewerLnkRS16;adortl;dxPSTeeChartRS16;dxPSdxLCLnkRS16;dxPScxExtCommonRS16;Tee;DBXOdbcDriver;dxPScxCommonRS16;dxPSPrVwRibbonRS16;vclactnband;TeeUI;bindcompvcl;vclie;VCL_FlexCel_Core;vcltouch;websnap;dxServerModeRS16;cxEditorsRS16;VclSmp;dxTabbedMDIRS16;dsnapcon;dxHttpIndyRequestRS16;dxThemeRS16;dxPScxPCProdRS16;vclx;dxGDIPlusRS16;$(DCC_UsePackage)</DCC_UsePackage>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -68,6 +67,7 @@
 			<DCC_RemoteDebug>true</DCC_RemoteDebug>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+			<DCC_UnitSearchPath>$(JGWLIB)\DCP\Win32\Debug;$(JGWLIB)\DCU\Win32\Debug;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 			<DCC_RemoteDebug>false</DCC_RemoteDebug>
@@ -131,6 +131,15 @@
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
 					<Excluded_Packages>
+						<Excluded_Packages Name="D:\VCL\BPL\DelphiXE2\Bpl\dcltmsbcl160.bpl">TMS Business Core Library - Design-Time Package</Excluded_Packages>
+						<Excluded_Packages Name="D:\VCL\BPL\DelphiXE2\Bpl\pfcorePkgDXE2.bpl">Core Interface for the TMS Plugin Framework</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclFMXtee9160.bpl">TeeChart Standard FMX Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dcltee9160.bpl">TeeChart Standard VCL Components</Excluded_Packages>
+						<Excluded_Packages Name="D:\VCL\BPL\DelphiXE2\BPL\VirtualTreesD16.bpl">VirtualTreeView Controls</Excluded_Packages>
+						<Excluded_Packages Name="D:\VCL\BPL\DelphiXE2\BPL\RaizeComponentsVcl_Design160.bpl">Raize Components 6.1.9</Excluded_Packages>
+						<Excluded_Packages Name="D:\VCL\BPL\DelphiXE2\BPL\dclaurelius160.bpl">TMS Aurelius - Design-Time Package</Excluded_Packages>
+						<Excluded_Packages Name="D:\VCL\BPL\DelphiXE2\Bpl\pfmgrPkgDXE2.bpl">Runtime support for the TMS Plugin Framework 6.0</Excluded_Packages>
+						<Excluded_Packages Name="D:\VCL\BPL\DelphiXE2\BPL\RaizeComponentsVclDb_Design160.bpl">Raize Components 6.1.9 (Data-Aware)</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k160.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dclofficexp160.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>

@@ -149,16 +149,16 @@ begin
   dateTimeFormat := TFormatSettings.Create;
   dateTimeFormat.DateSeparator := '-';
   dateTimeFormat.LongDateFormat := 'YYYY-MM-DD';
-
+  Update := TFileUpdate.Create;
   for i := 0 to RootNode.ChildNodes.Count - 1 do
   begin
-  
+
     if (Assigned(OnAnalyse)) then
       OnAnalyse(self, RootNode.ChildNodes.Count, i);
   
     Node := RootNode.ChildNodes[i];
    // ShowMessage(Node.ChildNodes['chkType'].Text);
-    Update := TFileUpdate.Create;
+
     Update.ChkType := TChkType(StrToInt(Node.ChildNodes['chkType'].Text));
     temp := Node.ChildNodes['DeskFile'].text;
     

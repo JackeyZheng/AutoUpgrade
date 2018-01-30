@@ -13,11 +13,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    FAnalyse: TAnalyse;
-    FAppInfo: TAppinfo;
-    FUpateList: TStrings;
-    FTransferFactory: TTransferFactory;
-    function CreateTransfer(URL: String): TTransfer;
+    procedure OnExecteResult(Ret: TStrings);
+
     { Private declarations }
   public
     { Public declarations }
@@ -30,65 +27,34 @@ var
 implementation
 
 uses
-  System.IniFiles;
+  System.IniFiles, uCheckUpdate;
 
 {$R *.dfm}
 
-function TForm2.CreateTransfer(URL: String): TTransfer;
-var
-  ProxySeting: TProxySeting;
-
-begin
-  Result := FTransferFactory.CreateTransfer(URL);
-  if FAppInfo.ProxyServer <> '' then
-  begin
-    ProxySeting.ProxyServer := FAppInfo.ProxyServer;
-    ProxySeting.ProxyPort := StrToInt(FAppInfo.ProxyPort);
-    ProxySeting.ProxyUser := FAppInfo.LoginUser;
-    ProxySeting.ProxyPass := FAppInfo.LoginPass;
-    Result.SetProxy(ProxySeting);
-  end
-  else
-    Result.ClearProxySeting;
-end;
-
 procedure TForm2.FormDestroy(Sender: TObject);
+var
+  i: Integer;
 begin
-  if Assigned(FAppInfo) then
-    FreeAndNil(FAppinfo);
-  if Assigned(FAnalyse) then
-    FreeAndNil(FAnalyse);
-  if Assigned(FUpateList) then
-    FreeAndNil(FUpateList);
-  FreeAndNil(FTransferFactory);
+  for I := 0 to lst1.Items.Count - 1 do
+    lst1.Items.Objects[i].Free;
 end;
 
 procedure TForm2.FormCreate(Sender: TObject);
-var
-  IniFile: TInifile;
-  Section: String;
-
 begin
-  FTransferFactory := TTransferFactory.Create;
-  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
-  try
-    Section := IniFile.ReadString('Application', 'ApplicationName', '');
-    if Section <> '' then
-    begin
-      FAppInfo := TIniAppInfo.Create(ExtractFilePath(Application.ExeName) + UpdateAppIniFileName, Section);
-      FAppInfo.AppName := Section;
-      FAnalyse := TXMLAnalyse.Create;
-      FAnalyse.UpdateList := FAppInfo.UpdateServer  + FAppInfo.ListDefFile;
-      FAnalyse.Transfer := CreateTransfer(FAnalyse.UpdateList);
-      FUpateList := FAnalyse.GetUpdateList;
-      lbl1.Caption := Format('一共有%d个文件需要更新', [FUpateList.Count]);
-      lst1.Items.Assign(FUpateList);
-    end;
-  finally
-    FreeAndNil(IniFile);
-  end;
-  //if Assigned(FAppInfo) then
-
+  CheckUpdate(OnExecteResult);
 end;
+
+procedure TForm2.OnExecteResult(Ret: TStrings);
+begin
+  // TODO -cMM: TForm2.OnExecteResult default body inserted
+  if Assigned(Ret) then
+  begin
+    lbl1.Caption := Format('一共有%d个更新', [Ret.Count]);
+    lst1.Items.Assign(Ret);
+    FreeAndNil(Ret);
+  end;
+end;
+
+
 
 end.
