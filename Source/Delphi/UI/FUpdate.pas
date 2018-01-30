@@ -194,24 +194,25 @@ end;
 procedure TfrmAutoUpdate.FormCreate(Sender: TObject);
 var
   IniFile: TIniFile;
-  Sessions: TStringList;
+  //Sessions: TStringList;
 begin
   //设置程序的外观界面
-  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.Ini'));
-//  SkinData1.SkinFile := IniFile.ReadString('Application', 'Skins', '');
-//  if (SkinData1.SkinFile <> '') then
-//    SkinData1.Active := true;
-  FreeAndNil(IniFile);
+//  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.Ini'));
+////  SkinData1.SkinFile := IniFile.ReadString('Application', 'Skins', '');
+////  if (SkinData1.SkinFile <> '') then
+////    SkinData1.Active := true;
+//  FreeAndNil(IniFile);
 
   TransferFactory := TTransferFactory.Create;
   PcWizard.ActivePageIndex := 0;
   Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START);
-  Sessions := TStringList.Create;
+  //Sessions := TStringList.Create;
   Inifile := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'UpdateApps.ini');
-  IniFile.ReadSections(Sessions);
-  lbAppList.Items.Assign(Sessions);
+  IniFile.ReadSections(lbAppList.Items);
+  //lbAppList.Items.Assign(Sessions);
   lbApplist.ItemIndex := 0;
-  FreeAndNil(Sessions);
+  //FreeAndNil(Sessions);
+  FreeAndNil(IniFile);
   InitAppInfo;
   CheckUpdate;
 end;
