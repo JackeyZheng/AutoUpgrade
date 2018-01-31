@@ -6,10 +6,10 @@
 			<Projects Include="AutoUpdate.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="AutoCreateXML.dproj">
+			<Projects Include="JGWUpdater.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="JGWUpdater.dproj">
+			<Projects Include="AutoCreateXML.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="..\..\Test\Project\XE2\TestProject.dproj">
@@ -32,15 +32,6 @@
 		<Target Name="AutoUpdate:Make">
 			<MSBuild Projects="AutoUpdate.dproj" Targets="Make"/>
 		</Target>
-		<Target Name="AutoCreateXML">
-			<MSBuild Projects="AutoCreateXML.dproj"/>
-		</Target>
-		<Target Name="AutoCreateXML:Clean">
-			<MSBuild Projects="AutoCreateXML.dproj" Targets="Clean"/>
-		</Target>
-		<Target Name="AutoCreateXML:Make">
-			<MSBuild Projects="AutoCreateXML.dproj" Targets="Make"/>
-		</Target>
 		<Target Name="JGWUpdater">
 			<MSBuild Projects="JGWUpdater.dproj"/>
 		</Target>
@@ -49,6 +40,15 @@
 		</Target>
 		<Target Name="JGWUpdater:Make">
 			<MSBuild Projects="JGWUpdater.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="AutoCreateXML">
+			<MSBuild Projects="AutoCreateXML.dproj"/>
+		</Target>
+		<Target Name="AutoCreateXML:Clean">
+			<MSBuild Projects="AutoCreateXML.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="AutoCreateXML:Make">
+			<MSBuild Projects="AutoCreateXML.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="TestProject">
 			<MSBuild Projects="..\..\Test\Project\XE2\TestProject.dproj"/>
@@ -60,13 +60,13 @@
 			<MSBuild Projects="..\..\Test\Project\XE2\TestProject.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="AutoUpdate;AutoCreateXML;JGWUpdater;TestProject"/>
+			<CallTarget Targets="AutoUpdate;JGWUpdater;AutoCreateXML;TestProject"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="AutoUpdate:Clean;AutoCreateXML:Clean;JGWUpdater:Clean;TestProject:Clean"/>
+			<CallTarget Targets="AutoUpdate:Clean;JGWUpdater:Clean;AutoCreateXML:Clean;TestProject:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="AutoUpdate:Make;AutoCreateXML:Make;JGWUpdater:Make;TestProject:Make"/>
+			<CallTarget Targets="AutoUpdate:Make;JGWUpdater:Make;AutoCreateXML:Make;TestProject:Make"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>

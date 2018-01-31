@@ -74,6 +74,7 @@ type
       FOnRe: TOnResult;
     public
       constructor Create(an: TAnalyse);
+      destructor Destroy; override;
       property OnRe: TOnResult write FOnRe;
     protected
       procedure Execute; override;
@@ -149,7 +150,7 @@ begin
   dateTimeFormat := TFormatSettings.Create;
   dateTimeFormat.DateSeparator := '-';
   dateTimeFormat.LongDateFormat := 'YYYY-MM-DD';
-
+  Update := TFileUpdate.Create;
   for i := 0 to RootNode.ChildNodes.Count - 1 do
   begin
 
@@ -158,7 +159,6 @@ begin
   
     Node := RootNode.ChildNodes[i];
    // ShowMessage(Node.ChildNodes['chkType'].Text);
-    Update := TFileUpdate.Create;
     Update.ChkType := TChkType(StrToInt(Node.ChildNodes['chkType'].Text));
     temp := Node.ChildNodes['DeskFile'].text;
     
@@ -223,6 +223,14 @@ constructor TTestThread.Create(an: TAnalyse);
 begin
   inherited Create(True);
   FAn := an;
+end;
+
+destructor TTestThread.Destroy;
+begin
+  if Assigned(FAn) then
+    FreeAndNil(FAn);
+  inherited;
+  // TODO -cMM: TTestThread.Destroy default body inserted
 end;
 
 procedure TTestThread.Execute;

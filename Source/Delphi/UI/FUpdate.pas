@@ -57,6 +57,7 @@ type
     Label20: TLabel;
     lblStatuse: TLabel;
     atpgrdr1: TauAutoUpgrader;
+    procedure FormDestroy(Sender: TObject);
     procedure cmdNextClick(Sender: TObject);
     procedure cmdPrevClick(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -67,7 +68,6 @@ type
     procedure tbsGetUpdateShow(Sender: TObject);
     procedure tbsWellComeShow(Sender: TObject);
     procedure tbsDownloadShow(Sender: TObject);
-    procedure SkinData1SkinChanged(Sender: TObject);
   private
     { Private declarations }
     AppInfo : TAppInfo;
@@ -78,6 +78,7 @@ type
     STime: TDateTime;
     AbortTransfer: Boolean;
     FBreak: Boolean;
+    FSuccess: Boolean;
     t: TTestThread;
     procedure CheckUpdate;
     procedure OnAnalyse(Sender: TObject; Count, Current: Integer);
@@ -108,6 +109,13 @@ Var
   AverageSpeed: Double = 0;
 
 {$R *.dfm}
+
+procedure TfrmAutoUpdate.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(TransferFactory);
+  if Assigned(AppInfo) then
+    FreeAndNil(AppInfo);
+end;
 
 procedure TfrmAutoUpdate.cmdNextClick(Sender: TObject);
 begin
@@ -194,27 +202,22 @@ end;
 procedure TfrmAutoUpdate.FormCreate(Sender: TObject);
 var
   IniFile: TIniFile;
-  //Sessions: TStringList;
 begin
   //设置程序的外观界面
-//  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.Ini'));
-////  SkinData1.SkinFile := IniFile.ReadString('Application', 'Skins', '');
-////  if (SkinData1.SkinFile <> '') then
-////    SkinData1.Active := true;
-//  FreeAndNil(IniFile);
 
   TransferFactory := TTransferFactory.Create;
   PcWizard.ActivePageIndex := 0;
   Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START);
-  //Sessions := TStringList.Create;
+  FSuccess := False;
   Inifile := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'UpdateApps.ini');
-  IniFile.ReadSections(lbAppList.Items);
-  //lbAppList.Items.Assign(Sessions);
-  lbApplist.ItemIndex := 0;
-  //FreeAndNil(Sessions);
-  FreeAndNil(IniFile);
-  InitAppInfo;
-  CheckUpdate;
+  try
+    IniFile.ReadSections(lbAppList.Items);
+    lbApplist.ItemIndex := 0;
+    InitAppInfo;
+    CheckUpdate;
+  finally
+    FreeAndNil(IniFile);
+  end;
 end;
 
 procedure TfrmAutoUpdate.tbsGetUpdateShow(Sender: TObject);
@@ -239,6 +242,7 @@ begin
     try
       t := TTestThread.Create(Analyse);
       t.OnRe := UpdaeNext;
+      t.FreeOnTerminate := true;
       t.Resume;
     except
       Label3.Font.Color := clRed;
@@ -370,16 +374,6 @@ begin
   Memo1.Lines.Add(AStatusText);
 end;
 
-procedure TfrmAutoUpdate.SkinData1SkinChanged(Sender: TObject);
-var
-  IniFile: TIniFile;
-begin
-  //设置程序的外观界面
-  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.Ini'));
-//  IniFile.WriteString( 'Application', 'Skins', SkinData1.SkinFile);
-  FreeAndNil(Inifile);
-end;
-
 function TfrmAutoUpdate.CreateTransfer(URL: String): TTransfer;
 var
   ProxySeting: TProxySeting;
@@ -484,20 +478,27 @@ begin
   self.cmdNext.Enabled := false;
   Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
   FBreak := True;
+  FSuccess := True;
 end;
 
 procedure TfrmAutoUpdate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
   ExeFilePath: string;
 begin
-  ExeFilePath := IncludeTrailingBackslash(AppInfo.LocalPath) + AppInfo.AppExeFile;
-  CanClose := True;
-  if Application.MessageBox('是否运行程序？', '系统提示', MB_YESNO + MB_ICONQUESTION) =
-    IDYES then
+  if Assigned(AppInfo) then
   begin
-    ShellExecute(Application.Handle, 'Open',
-          PWideChar(ExeFilePath),
-          nil, nil, SW_NORMAL);
+    if FSuccess then
+    begin
+      ExeFilePath := IncludeTrailingBackslash(AppInfo.LocalPath) + AppInfo.AppExeFile;
+      CanClose := True;
+      if Application.MessageBox('更新以完成，是否运行程序？', '系统提示', MB_YESNO + MB_ICONQUESTION) =
+        IDYES then
+      begin
+        ShellExecute(Application.Handle, 'Open',
+              PWideChar(ExeFilePath),
+              nil, nil, SW_NORMAL);
+      end;
+    end;
   end;
 end;
 
@@ -505,32 +506,32 @@ procedure TfrmAutoUpdate.UpdaeNext(temp: TStrings);
 begin
   if temp = nil then
   begin
-      Label3.Font.Color := clRed;
-      Label3.Caption := '从网络读取更新文件错误，请检查您的网络是否连通!';
-      Label3.Update;
-      self.cmdPrev.Enabled := true;
-      self.cmdNext.Enabled := false;
+    Label3.Font.Color := clRed;
+    Label3.Caption := '从网络读取更新文件错误，请检查您的网络是否连通!';
+    Label3.Update;
+    self.cmdPrev.Enabled := true;
+    self.cmdNext.Enabled := false;
   end
   else
   begin
-      lbUpdateList.Items.Assign(temp);
-      if (lbUpdateList.Items.Count > 0) then
-      begin
-        Label3.Font.Color := clRed;
-        Label3.Caption := Format('共有 %d 个可用更新', [lbUpdateList.Items.Count]);
-        self.cmdPrev.Enabled := true;
-        self.cmdNext.Enabled := true;
-      end
-      else
-      begin
-        Label3.Font.Color := clGreen;
-        Label3.Caption := '你的软件现在是最新的版本，不需要更新';
-        self.cmdPrev.Enabled := true;
-        self.cmdNext.Enabled := false;
-      end;
+    lbUpdateList.Items.Assign(temp);
+    if (lbUpdateList.Items.Count > 0) then
+    begin
+      Label3.Font.Color := clRed;
+      Label3.Caption := Format('共有 %d 个可用更新', [lbUpdateList.Items.Count]);
+      self.cmdPrev.Enabled := true;
+      self.cmdNext.Enabled := true;
+    end
+    else
+    begin
+      Label3.Font.Color := clGreen;
+      Label3.Caption := '你的软件现在是最新的版本，不需要更新';
+      self.cmdPrev.Enabled := true;
+      self.cmdNext.Enabled := false;
+    end;
   end;
   FreeAndNil(temp);
-  FreeAndNil(t);
+  //FreeAndNil(t);
 end;
 
 end.
