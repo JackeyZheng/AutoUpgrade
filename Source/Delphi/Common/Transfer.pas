@@ -355,10 +355,19 @@ begin
       Result := FObjectList.Items[Index] as TTransfer
     else
     begin
-    begin
       Result := THTTPTransfer.Create;
       FObjectList.Add(Result);
     end;
+  end
+  else if AnsiUpperCase(FIdURI.Protocol) = 'HTTPS' then
+  begin
+    Index := FObjectList.FindInstanceOf(THTTPSTransfer);
+    if Index <> -1 then
+      Result := FObjectList.Items[Index] as TTransfer
+    else
+    begin
+      Result := THTTPSTransfer.Create;
+      FObjectList.Add(Result);
     end;
   end
   else

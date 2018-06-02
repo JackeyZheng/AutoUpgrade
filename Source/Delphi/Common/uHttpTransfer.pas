@@ -25,10 +25,16 @@ type
     procedure SetProxy(ProxyInfo: TProxySeting); overload; override;
   end;
 
+  THTTPSTransfer = class(THTTPTransfer)
+  public
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
 implementation
 
 uses
-  System.IOUtils;
+  System.IOUtils, IdSSLOpenSSL;
 
 constructor THTTPTransfer.Create;
 begin
@@ -184,6 +190,22 @@ begin
     self.Port := 80
   else
     self.Port := StrToInt(URI.Port);
+end;
+
+constructor THTTPSTransfer.Create;
+begin
+  inherited;
+  FidHttp.IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+  // TODO -cMM: THTTPSTransfer.Create default body inserted
+end;
+
+destructor THTTPSTransfer.Destroy;
+begin
+  if Assigned(FidHttp) then
+    if Assigned(FidHttp.IOHandler) then
+      FidHttp.IOHandler.Free;
+  inherited Destroy;
+  // TODO -cMM: THTTPSTransfer.Destroy default body inserted
 end;
 
 end.
