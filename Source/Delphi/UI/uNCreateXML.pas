@@ -51,9 +51,6 @@ type
     rbVer: TRadioButton;
     edtFileName: TEdit;
     edtURL: TEdit;
-    grp4: TGroupBox;
-    rbCopy: TRadioButton;
-    rbExecute: TRadioButton;
     grp5: TGroupBox;
     Labellbl7: TLabel;
     edtSize: TEdit;
@@ -73,6 +70,7 @@ type
     btnBatchSave: TButton;
     btnAddDir: TButton;
     lbledtFilter: TLabeledEdit;
+    rgUpdateType: TRadioGroup;
     procedure btnOpenClick(Sender: TObject);
     procedure btn1Click(Sender: TObject);
     procedure edtDirChange(Sender: TObject);
@@ -200,10 +198,11 @@ begin
       else if rbNo.Checked then
         upFile.ChkType := '0';
 
-      if rbCopy.Checked then
-        upFile.UpdateType := '0'
-      else if rbExecute.Checked then
-        upFile.UpdateType := '1';
+//      if rbCopy.Checked then
+//        upFile.UpdateType := '0'
+//      else if rbExecute.Checked then
+//        upFile.UpdateType := '1';
+      upFile.UpdateType := IntToStr(rgUpdateType.ItemIndex);
 
       //upFile.FileSize := edtSize.Text;
       //upFile.Version := edtVer.Text;
@@ -243,10 +242,11 @@ begin
     else if rbNo.Checked then
       upFile.ChkType := '0';
 
-    if rbCopy.Checked then
-      upFile.UpdateType := '0'
-    else if rbExecute.Checked then
-      upFile.UpdateType := '1';
+//    if rbCopy.Checked then
+//      upFile.UpdateType := '0'
+//    else if rbExecute.Checked then
+//      upFile.UpdateType := '1';
+    upFile.UpdateType := IntToStr(rgUpdateType.ItemIndex);
 
     upFile.FileSize := edtSize.Text;
     upFile.Version := edtVer.Text;
@@ -450,10 +450,11 @@ begin
   begin
     edtURL.Text := upFile.FileURL;
 
-    if upFile.UpdateType = '0' then
-      rbCopy.Checked := True
-    else if upFile.UpdateType = '1' then
-      rbExecute.Checked := True;
+//    if upFile.UpdateType = '0' then
+//      rbCopy.Checked := True
+//    else if upFile.UpdateType = '1' then
+//      rbExecute.Checked := True;
+    rgUpdateType.ItemIndex := StrToInt(Pwidechar(upFile.UpdateType));
 
     if upFile.ChkType = '0' then
       rbNo.Checked := True

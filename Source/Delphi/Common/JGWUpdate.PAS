@@ -42,7 +42,11 @@ type
     /// <summary>
     ///   执行更新 ，执行一个更新程序来更新。
     /// </summary>
-    upExecute);
+    upExecute,
+    /// <summary>
+    ///   拷贝并执行更新 ，执行一个更新程序来更新。
+    /// </summary>
+    upCopyAndExcete);
 
   /// <summary>
   ///   更新对象基类
@@ -276,8 +280,22 @@ type
         TUpdateDecoratorClass; UpdateObj: TUpDate): TUpdateDecorator;
   end;
 
+  TCopyAndExceteUpdate = class(TCopyUpdate)
+  public
+    /// <summary>
+    ///   更新文件
+    /// </summary>
+    /// <returns>
+    ///   执行更新动作。
+    /// </returns>
+    function UpdateIt: Boolean; override;
+  end;
+
   const
-    UpdateClassArray:array[0..1] of TUpdateDecoratorClass=(TCopyUpdate, TExecuteUpdate);
+    UpdateClassArray:array[0..2] of TUpdateDecoratorClass=
+                          (TCopyUpdate,
+                          TExecuteUpdate,
+                          TCopyAndExceteUpdate);
 
 
 implementation
@@ -645,6 +663,34 @@ class function TUpdateDecoratorFactory.CreateUpdateDecorator(
 begin
   // TODO -cMM: TUpdateDecoratorFactory.CreateUpdateDecorator default body inserted
   Result := UpdateDecoratorClass.Create(UpdateObj);
+end;
+
+function TCopyAndExceteUpdate.UpdateIt: Boolean;
+var
+  FileAction : TFileAction;
+begin
+  // TODO -cMM: TCopyAndExceteUpdate.UpdateIt default body inserted
+  Result := inherited;
+  if Result then
+  begin
+  FileAction := TFileAction.Create(Update.LocalFile);
+    try
+      try
+        if FileAction.Execute(SW_SHOWNORMAL) <> INFINITE then
+        begin
+           //MoveFile(Update.TempPath, Update.LocalFile);
+           Result := true;
+        end
+        else
+          Result := false;
+      except
+        Result := false;
+      end;
+
+    finally
+      FreeAndNil(FileAction);
+    end;
+  end;
 end;
 
 

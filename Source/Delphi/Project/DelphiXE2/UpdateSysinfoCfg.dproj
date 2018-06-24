@@ -1,16 +1,21 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{E6197B6B-B625-47C0-9858-AE0971CC64D7}</ProjectGuid>
-			<MainSource>JGWUpdater.dpk</MainSource>
+			<ProjectGuid>{7225AC7F-8F3B-40C6-815B-42C350B34B8B}</ProjectGuid>
 			<ProjectVersion>13.4</ProjectVersion>
-			<FrameworkType>VCL</FrameworkType>
+			<FrameworkType>None</FrameworkType>
+			<MainSource>UpdateSysinfoCfg.dpr</MainSource>
 			<Base>True</Base>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<Platform Condition="'$(Platform)'==''">Win32</Platform>
 			<TargetedPlatforms>1</TargetedPlatforms>
-			<AppType>Package</AppType>
+			<AppType>Console</AppType>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+			<Base_Win64>true</Base_Win64>
+			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
@@ -34,32 +39,25 @@
 			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
-		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
-			<Cfg_2_Win32>true</Cfg_2_Win32>
-			<CfgParent>Cfg_2</CfgParent>
-			<Cfg_2>true</Cfg_2>
-			<Base>true</Base>
-		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<RuntimeOnlyPackage>true</RuntimeOnlyPackage>
-			<DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-			<GenDll>true</GenDll>
-			<GenPackage>true</GenPackage>
+			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+			<DCC_UsePackage>FlexCel_Core;fmx;IndySystem;FlexCel_Report;DataSnapClient;DataSnapServer;DataSnapCommon;DBXInterBaseDriver;DataSnapProviderClient;DbxCommonDriver;dbxcds;DBXOracleDriver;CustomIPTransport;dsnap;IndyCore;fmxase;FMX_FlexCel_Core;inetdbxpress;IPIndyImpl;bindcompfmx;rtl;dbrtl;DbxClientDriver;bindcomp;inetdb;FlexCel_Render;xmlrtl;IndyProtocols;DBXMySQLDriver;bindengine;soaprtl;FlexCel_Pdf;aurelius;FMX_FlexCel_Components;DBXInformixDriver;DBXFirebirdDriver;inet;fmxobj;DBXSybaseASADriver;fmxdae;FlexCel_XlsAdapter;dbexpress;DataSnapIndy10ServerTransport;$(DCC_UsePackage)</DCC_UsePackage>
 			<DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
 			<DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
 		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win64)'!=''">
+			<DCC_UsePackage>dxBarDBNavRS16;cxLibraryRS16;dxLayoutControlRS16;dxCoreRS16;dxSpreadSheetRS16;cxExportRS16;dxPDFViewerRS16;dxBarRS16;TeeDB;dxDBXServerModeRS16;cxTreeListdxBarPopupMenuRS16;RaizeComponentsVcl;dxPsPrVwAdvRS16;dxRibbonCustomizationFormRS16;dxPSCoreRS16;dxPSdxSpreadSheetLnkRS16;cxPageControlRS16;DBXSybaseASEDriver;dxRibbonRS16;VCL_FlexCel_Components;vclimg;dxSpreadSheetConditionalFormattingDialogsRS16;dxPScxTLLnkRS16;cxTreeListRS16;dxComnRS16;vcldb;dxOfficeCoreRS16;dxADOServerModeRS16;vcldsnap;dxBarExtDBItemsRS16;DBXDb2Driver;vcl;DBXMSSQLDriver;cxDataRS16;dxPSDBTeeChartRS16;webdsnap;dxSpreadSheetReportDesignerRS16;dxBarExtItemsRS16;dxPSLnksRS16;dxPSdxPDFViewerLnkRS16;adortl;dxPSTeeChartRS16;dxPSdxLCLnkRS16;dxPScxExtCommonRS16;Tee;DBXOdbcDriver;dxPScxCommonRS16;dxPSPrVwRibbonRS16;vclactnband;TeeUI;bindcompvcl;vclie;VCL_FlexCel_Core;vcltouch;websnap;dxServerModeRS16;cxEditorsRS16;VclSmp;dxTabbedMDIRS16;dsnapcon;dxHttpIndyRequestRS16;dxThemeRS16;dxPScxPCProdRS16;vclx;dxGDIPlusRS16;$(DCC_UsePackage)</DCC_UsePackage>
+		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
-			<VerInfo_MinorVer>1</VerInfo_MinorVer>
-			<VerInfo_MajorVer>2</VerInfo_MajorVer>
-			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<DCC_BplOutput>$(JGWLIB)\BPL\$(Platform)\$(Config)</DCC_BplOutput>
-			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_AutoGenVersion>true</VerInfo_AutoGenVersion>
-			<DCC_DcuOutput>$(JGWLIB)\DCU\$(Platform)\$(Config)</DCC_DcuOutput>
-			<DCC_DcpOutput>$(JGWLIB)\DCP\$(Platform)\$(Config)</DCC_DcpOutput>
-			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.1.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<DCC_ExeOutput>..\..\..\..\OUTPUT\BIN\$(Platform)\$(Config)</DCC_ExeOutput>
+			<Manifest_File>None</Manifest_File>
+			<DCC_DcuOutput>..\..\..\..\OUTPUT\DCU\$(Platform)\$(Config)</DCC_DcuOutput>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<DCC_UsePackage>dxBarDBNavRS16;JvGlobus;JvMM;cxLibraryRS16;dxLayoutControlRS16;JvManagedThreads;XLSRWII5_DXE2;dxCoreRS16;dxSpreadSheetRS16;cxExportRS16;dxPDFViewerRS16;dxBarRS16;JvDlgs;JvCrypt;TeeDB;dxDBXServerModeRS16;cxTreeListdxBarPopupMenuRS16;RaizeComponentsVcl;dxPsPrVwAdvRS16;inetdbbde;vclib;dxRibbonCustomizationFormRS16;dxPSCoreRS16;dxPSdxSpreadSheetLnkRS16;JvNet;cxPageControlRS16;JvDotNetCtrls;DBXSybaseASEDriver;dxRibbonRS16;VCL_FlexCel_Components;vclimg;dxSpreadSheetConditionalFormattingDialogsRS16;dxPScxTLLnkRS16;fmi;cxTreeListRS16;dxComnRS16;JvXPCtrls;Anylib_XE2;vcldb;dxOfficeCoreRS16;dxADOServerModeRS16;vcldsnap;dxBarExtDBItemsRS16;DBXDb2Driver;Intraweb_120_160;DCEF_XE2;JvCore;vclribbon;frxe16;vcl;CloudService;DBXMSSQLDriver;FmxTeeUI;AutoUpgraderProD2012;cxDataRS16;dxPSDBTeeChartRS16;tmsexdxe2;JvAppFrm;JvDB;JvRuntimeDesign;tmsdxe2;webdsnap;dxSpreadSheetReportDesignerRS16;dxBarExtItemsRS16;dxPSLnksRS16;dxPSdxPDFViewerLnkRS16;JclDeveloperTools;JvDocking;adortl;dxPSTeeChartRS16;dxPSdxLCLnkRS16;JvWizards;JvHMI;dxPScxExtCommonRS16;JvBands;vcldbx;EjunCommonDXE2;frx16;JvPluginSystem;Tee;JclContainers;DBXOdbcDriver;JvCmp;JvSystem;svnui;ibxpress;JvTimeFramework;JvControls;dxPScxCommonRS16;dxPSPrVwRibbonRS16;intrawebdb_120_160;frxDB16;EjunGridDXE2;fs16;vclactnband;FMXTee;TeeUI;JvJans;bindcompvcl;JvStdCtrls;JvCustom;Jcl;vclie;JvPageComps;JvPrintPreview;VCL_FlexCel_Core;vcltouch;tmsxlsdxe2;websnap;dxServerModeRS16;cxEditorsRS16;EjunExcelDXE2;VclSmp;dxTabbedMDIRS16;DataSnapConnectors;dsnapcon;dxHttpIndyRequestRS16;dxThemeRS16;JclVcl;JvPascalInterpreter;dxPScxPCProdRS16;vclx;tmswizdxe2;svn;bdertl;VirtualTreesR;dxGDIPlusRS16;JvBDE;$(DCC_UsePackage)</DCC_UsePackage>
+			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>2052</VerInfo_Locale>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -69,9 +67,7 @@
 			<DCC_RemoteDebug>true</DCC_RemoteDebug>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-			<VerInfo_AutoGenVersion>true</VerInfo_AutoGenVersion>
-			<VerInfo_MajorVer>2</VerInfo_MajorVer>
-			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<Manifest_File>None</Manifest_File>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 			<DCC_RemoteDebug>false</DCC_RemoteDebug>
 		</PropertyGroup>
@@ -81,31 +77,10 @@
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
-		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<VerInfo_MajorVer>2</VerInfo_MajorVer>
-			<VerInfo_Locale>2052</VerInfo_Locale>
-			<VerInfo_AutoGenVersion>true</VerInfo_AutoGenVersion>
-		</PropertyGroup>
 		<ItemGroup>
 			<DelphiCompile Include="$(MainSource)">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="rtl.dcp"/>
-			<DCCReference Include="vcl.dcp"/>
-			<DCCReference Include="xmlrtl.dcp"/>
-			<DCCReference Include="IndySystem.dcp"/>
-			<DCCReference Include="IndyProtocols.dcp"/>
-			<DCCReference Include="IndyCore.dcp"/>
-			<DCCReference Include="JGWCore16.dcp"/>
-			<DCCReference Include="..\..\Common\Analyse.PAS"/>
-			<DCCReference Include="..\..\Common\AnalyserCmd.PAS"/>
-			<DCCReference Include="..\..\Common\AppInfo.PAS"/>
-			<DCCReference Include="..\..\Common\FmxUtils.pas"/>
-			<DCCReference Include="..\..\Common\Transfer.pas"/>
-			<DCCReference Include="..\..\Common\uHttpTransfer.pas"/>
-			<DCCReference Include="..\..\Common\JGWUpdate.PAS"/>
-			<DCCReference Include="..\..\Common\uCheckUpdate.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
@@ -120,14 +95,11 @@
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
-			<Borland.ProjectType>Package</Borland.ProjectType>
+			<Borland.ProjectType/>
 			<BorlandProject>
 				<Delphi.Personality>
-					<Source>
-						<Source Name="MainSource">JGWUpdater.dpk</Source>
-					</Source>
 					<VersionInfo>
-						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
@@ -157,6 +129,9 @@
 						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k160.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dclofficexp160.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>
+					<Source>
+						<Source Name="MainSource">UpdateSysinfoCfg.dpr</Source>
+					</Source>
 				</Delphi.Personality>
 				<Deployment/>
 				<Platforms>

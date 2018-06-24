@@ -119,7 +119,7 @@ object FrmNCreateXML: TFrmNCreateXML
       Width = 231
       Height = 32
       Caption = #20445#23384
-      TabOrder = 5
+      TabOrder = 4
       OnClick = btnSaveClick
     end
     object grp3: TGroupBox
@@ -128,7 +128,7 @@ object FrmNCreateXML: TFrmNCreateXML
       Width = 229
       Height = 167
       Caption = #26816#26597#31867#22411
-      TabOrder = 3
+      TabOrder = 2
       object rbNo: TRadioButton
         Left = 62
         Top = 21
@@ -184,31 +184,7 @@ object FrmNCreateXML: TFrmNCreateXML
       Width = 165
       Height = 20
       ReadOnly = True
-      TabOrder = 2
-    end
-    object grp4: TGroupBox
-      Left = 306
-      Top = 24
-      Width = 231
-      Height = 48
-      Caption = #26356#26032#26041#24335
       TabOrder = 1
-      object rbCopy: TRadioButton
-        Left = 22
-        Top = 21
-        Width = 85
-        Height = 17
-        Caption = 'Copy'#26356#26032
-        TabOrder = 0
-      end
-      object rbExecute: TRadioButton
-        Left = 132
-        Top = 21
-        Width = 78
-        Height = 17
-        Caption = #25191#34892#26356#26032
-        TabOrder = 1
-      end
     end
     object grp5: TGroupBox
       Left = 276
@@ -216,7 +192,7 @@ object FrmNCreateXML: TFrmNCreateXML
       Width = 261
       Height = 167
       Caption = #30446#26631#25991#20214
-      TabOrder = 4
+      TabOrder = 3
       object Labellbl7: TLabel
         Left = 22
         Top = 52
@@ -298,7 +274,7 @@ object FrmNCreateXML: TFrmNCreateXML
       Width = 263
       Height = 32
       Caption = #25209#37327#35774#32622
-      TabOrder = 6
+      TabOrder = 5
       OnClick = btnBatchSaveClick
     end
     object lbledtFilter: TLabeledEdit
@@ -310,6 +286,20 @@ object FrmNCreateXML: TFrmNCreateXML
       EditLabel.Height = 12
       EditLabel.Caption = #36807#28388#21069#32512#65306
       LabelPosition = lpLeft
+      TabOrder = 6
+    end
+    object rgUpdateType: TRadioGroup
+      Left = 276
+      Top = 24
+      Width = 246
+      Height = 50
+      Caption = #26356#26032#26041#24335
+      Columns = 3
+      ItemIndex = 0
+      Items.Strings = (
+        #25335#36125
+        #25191#34892
+        #25335#36125#24182#25191#34892)
       TabOrder = 7
     end
   end

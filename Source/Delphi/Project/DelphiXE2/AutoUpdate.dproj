@@ -62,14 +62,14 @@
 			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
-			<VerInfo_MinorVer>7</VerInfo_MinorVer>
+			<VerInfo_MinorVer>8</VerInfo_MinorVer>
 			<VerInfo_MajorVer>2</VerInfo_MajorVer>
 			<DCC_ExeOutput>..\..\..\..\OUTPUT\BIN\$(Platform)\$(Config)</DCC_ExeOutput>
 			<DCC_UnitSearchPath>$(MYVCL)\AutoUpgraderXe2\Sources;..\..\..\..\OUTPUT\DCU\$(Platform)\$(Config);$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_DcuOutput>..\..\..\..\OUTPUT\DCU\$(Platform)\$(Config)</DCC_DcuOutput>
 			<DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.7.0.15;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=2.0.0.15;Comments=</VerInfo_Keys>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=2.8.0.15;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=2.0.0.15;Comments=</VerInfo_Keys>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -172,7 +172,6 @@
 						<VersionInfoKeys Name="LastCompiledTime">2013/7/9 15:32:45</VersionInfoKeys>
 					</VersionInfoKeys>
 					<Excluded_Packages>
-						<Excluded_Packages Name="D:\VCL\BPL\DelphiXE2\BPL\RaizeComponentsVclDb_Design160.bpl">Raize Components 6.1.9 (Data-Aware)</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k160.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dclofficexp160.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>

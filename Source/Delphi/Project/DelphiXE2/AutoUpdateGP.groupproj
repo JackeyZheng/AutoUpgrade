@@ -12,6 +12,9 @@
 			<Projects Include="AutoCreateXML.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="UpdateSysinfoCfg.dproj">
+				<Dependencies/>
+			</Projects>
 			<Projects Include="..\..\Test\Project\XE2\TestProject.dproj">
 				<Dependencies/>
 			</Projects>
@@ -50,6 +53,15 @@
 		<Target Name="AutoCreateXML:Make">
 			<MSBuild Projects="AutoCreateXML.dproj" Targets="Make"/>
 		</Target>
+		<Target Name="UpdateSysinfoCfg">
+			<MSBuild Projects="UpdateSysinfoCfg.dproj"/>
+		</Target>
+		<Target Name="UpdateSysinfoCfg:Clean">
+			<MSBuild Projects="UpdateSysinfoCfg.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="UpdateSysinfoCfg:Make">
+			<MSBuild Projects="UpdateSysinfoCfg.dproj" Targets="Make"/>
+		</Target>
 		<Target Name="TestProject">
 			<MSBuild Projects="..\..\Test\Project\XE2\TestProject.dproj"/>
 		</Target>
@@ -60,13 +72,13 @@
 			<MSBuild Projects="..\..\Test\Project\XE2\TestProject.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="AutoUpdate;JGWUpdater;AutoCreateXML;TestProject"/>
+			<CallTarget Targets="AutoUpdate;JGWUpdater;AutoCreateXML;UpdateSysinfoCfg;TestProject"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="AutoUpdate:Clean;JGWUpdater:Clean;AutoCreateXML:Clean;TestProject:Clean"/>
+			<CallTarget Targets="AutoUpdate:Clean;JGWUpdater:Clean;AutoCreateXML:Clean;UpdateSysinfoCfg:Clean;TestProject:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="AutoUpdate:Make;JGWUpdater:Make;AutoCreateXML:Make;TestProject:Make"/>
+			<CallTarget Targets="AutoUpdate:Make;JGWUpdater:Make;AutoCreateXML:Make;UpdateSysinfoCfg:Make;TestProject:Make"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>

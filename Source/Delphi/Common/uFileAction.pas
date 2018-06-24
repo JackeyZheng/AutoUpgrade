@@ -33,24 +33,27 @@ var
 begin
   Result := true;
   VerInfoSize := GetFileVersionInfoSize(PChar(FFileName), Dummy);
-  GetMem(VerInfo, VerInfoSize);
-  GetFileVersionInfo(Pchar(FFileName), 0, VerInfoSize, VerInfo);
-  try
+  if VerInfoSize >0  then
+  begin
+    GetMem(VerInfo, VerInfoSize);
+    GetFileVersionInfo(Pchar(FFileName), 0, VerInfoSize, VerInfo);
     try
-      VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
-      with VerValue^ do
-      begin
-        V1 := dwFileVersionMS shr 16;
+      try
+        VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
+        with VerValue^ do
+        begin
+          V1 := dwFileVersionMS shr 16;
 
-        V2 := dwFileVersionMS and $FFFF;
-        V3 := dwFileVersionLS shr 16;
-        V4 := dwFileVersionLS and $FFFF;
+          V2 := dwFileVersionMS and $FFFF;
+          V3 := dwFileVersionLS shr 16;
+          V4 := dwFileVersionLS and $FFFF;
+        end;
+      except
+        Result := false;
       end;
-    except
-      Result := false;
+    finally
+      FreeMem(VerInfo, VerInfoSize);
     end;
-  finally
-    FreeMem(VerInfo, VerInfoSize);
   end;
 end;
 
