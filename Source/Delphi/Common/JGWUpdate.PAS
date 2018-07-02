@@ -300,7 +300,7 @@ type
 
 implementation
 
-uses AnalyserCmd, FmxUtils, uFileAction, System.IOUtils;
+uses AnalyserCmd, FmxUtils, uFileAction, System.IOUtils, Winapi.ShellAPI;
 
 {
 *********************************** TUpdate ************************************
@@ -635,26 +635,29 @@ begin
 end;
 
 function TExecuteUpdate.UpdateIt: Boolean;
-var
-  FileAction : TFileAction;
+//var
+//  FileAction : TFileAction;
 begin
-  FileAction := TFileAction.Create(Update.TempPath);
-  try
-    try
-      if FileAction.Execute(SW_SHOWNORMAL) <> INFINITE then
-      begin
-         //MoveFile(Update.TempPath, Update.LocalFile);
-         Result := true;
-      end
-      else
-        Result := false;
-    except
-      Result := false;
-    end;
-
-  finally
-    FreeAndNil(FileAction);
-  end;
+      ShellExecute(Application.Handle, 'Open',
+            PWideChar(Update.TempPath),
+            nil, nil, SW_SHOWNORMAL);
+//  FileAction := TFileAction.Create(Update.TempPath);
+//  try
+//    try
+//      if FileAction.Execute(SW_SHOWNORMAL) <> INFINITE then
+//      begin
+//         //MoveFile(Update.TempPath, Update.LocalFile);
+//         Result := true;
+//      end
+//      else
+//        Result := false;
+//    except
+//      Result := false;
+//    end;
+//
+//  finally
+//    FreeAndNil(FileAction);
+//  end;
 end;
 
 class function TUpdateDecoratorFactory.CreateUpdateDecorator(
@@ -673,24 +676,28 @@ begin
   Result := inherited;
   if Result then
   begin
-  FileAction := TFileAction.Create(Update.LocalFile);
-    try
-      try
-        if FileAction.Execute(SW_SHOWNORMAL) <> INFINITE then
-        begin
-           //MoveFile(Update.TempPath, Update.LocalFile);
-           Result := true;
-        end
-        else
-          Result := false;
-      except
-        Result := false;
-      end;
-
-    finally
-      FreeAndNil(FileAction);
-    end;
+    ShellExecute(Application.Handle, 'Open',
+            PWideChar(Update.LocalFile),
+            nil, nil, SW_SHOWNORMAL);
   end;
+//  FileAction := TFileAction.Create(Update.LocalFile);
+//    try
+//      try
+//        if FileAction.Execute(SW_SHOWNORMAL) <> INFINITE then
+//        begin
+//           //MoveFile(Update.TempPath, Update.LocalFile);
+//           Result := true;
+//        end
+//        else
+//          Result := false;
+//      except
+//        Result := false;
+//      end;
+//
+//    finally
+//      FreeAndNil(FileAction);
+//    end;
+//  end;
 end;
 
 
