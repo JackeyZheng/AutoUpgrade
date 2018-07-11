@@ -15,6 +15,8 @@ type
   end;
   
   TVersionAnalyse = class(TAnalyseCmd)
+  private
+    function CompareVersionString(ALeft, ARight: string): Integer;
   public
     function Run(Update: TUpdate): TUpdate; override;
   end;
@@ -71,6 +73,37 @@ begin
   end;
 end;
 
+function TVersionAnalyse.CompareVersionString(ALeft, ARight: string): Integer;
+var
+  LeftList: TStrings;
+  RightList: TStrings;
+  i: integer;
+begin
+  LeftList := TStringList.Create;
+  RightList := TStringList.Create;
+  try
+    LeftList.Delimiter := '.';
+    RightList.Delimiter := '.';
+    LeftList.DelimitedText := ALeft;
+    RightList.DelimitedText := ARight;
+    for I := 0 to LeftList.Count - 1 do
+    begin
+      if RightList.Count  > i then
+      begin
+        Result := StrToInt(LeftList[i]) - StrToInt(RightList[i]);
+        if Result <> 0 then
+          Break;
+      end
+      else
+        Result := 1;
+    end;
+  finally
+    FreeAndNil(LeftList);
+    FreeAndNil(RightList);
+  end;
+  // TODO -cMM: TVersionAnalyse.CompareVersionString default body inserted
+end;
+
 {
 ******************************* TVersionAnalyse ********************************
 }
@@ -85,7 +118,8 @@ begin
   try
     if (FileAction.FileExit) then
       begin
-      if Update.NewVersion > FileAction.GetFileVersionAsText then
+      if CompareVersionString(Update.NewVersion, FileAction.GetFileVersionAsText) > 0 then
+      //if Update.NewVersion > FileAction.GetFileVersionAsText then
       begin
         NewUpdate := TFileUpdate.Create;
         NewUpdate.Assign(Update);
