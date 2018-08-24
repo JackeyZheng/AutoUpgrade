@@ -438,9 +438,19 @@ begin
     TransferObj.OnTransfer := OnDownload;
     TransferObj.OnStatus := OnStatuse;
     UpdateObj.TransferObj := TransferObj;
-    UpdateObj.Download(UpdateObj.TempPath);
-    if FBreak then
-      Exit;
+    try
+      UpdateObj.Download(UpdateObj.TempPath);
+      if FBreak then
+        Exit;
+    except
+      on e: Exception do
+      begin
+        //MessageBox(Handle, PWideChar('传输时发生错误，错误信息：' + #10#13 + e.Message), '系统提示', MB_OK);
+        Memo1.Lines.Add(Format('传输时发生了错误，错误信息：%s', [e.Message]));
+        Memo1.Lines.Add('传输终止！');
+        Exit;
+      end;
+    end;
   end;
 
   lblStatuse.Caption := '';

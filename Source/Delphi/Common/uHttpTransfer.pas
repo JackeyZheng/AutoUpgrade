@@ -72,9 +72,11 @@ end;
 
 procedure THTTPTransfer.Get(FileName: String);
 var
-  temp: Int64;
+  Position, DataLength: Int64;
   FileStream: TFileStream;
   memstream: TMemoryStream;
+  i: integer;
+  bError: Boolean;
 begin
 //  try
     if not DirectoryExists(ExtractFilePath(FileName)) then
@@ -90,39 +92,51 @@ begin
       FIdHTTP.Request.Range := '';
       FidHttp.HandleRedirects := true;
       FidHttp.Head(Self.URI.URLEncode(Self.URL));
-      temp := FIdHTTP.Response.ContentLength;
-
-
-//      if temp > 10240 then
-//      begin
-
-//      end
-//      else
-//      begin
-//        FIdHTTP.OnWorkBegin := nil;
-//        FIdHTTP.OnWork := nil;
-//        FIdHTTP.OnWorkEnd := nil;
-//      end;
-      if FileStream.Position - FIdHTTP.Response.ContentLength < 0 then
+      DataLength := FIdHTTP.Response.ContentLength;
+      Position := FileStream.Position;
+      if Position - DataLength < 0 then
       begin
         FIdHTTP.OnWorkBegin := Self.WorkStart;
         FIdHTTP.OnWork := Self.Work;
         FIdHTTP.OnWorkEnd := Self.WorkEnd;
 
+        if Position > 0 then
+        begin
+          FileStream.Seek(0 ,soBeginning);
+          memstream.CopyFrom(FileStream, Position);
+        end;
+
         FidHttp.ConnectTimeout := 3000;
         FidHttp.ReadTimeout := 3000;
-        FIdHttp.Request.Range := Format('%d-%d', [FileStream.Position, FIdHTTP.Response.ContentLength]);
-
-        //FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
-        try
-          FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream);
-        except
-          if (FidHttp.ResponseCode >= 200) and (FidHttp.ResponseCode < 300) then
-            FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream)
-          else
-            raise;
+        bError := False;
+        for I := 0 to 99 do
+        begin
+          Position := memstream.Size;
+          FIdHttp.Request.Range := Format('%d-%d', [Position, DataLength]);
+          try
+            FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream);
+            bError := False;
+            Break;
+          except
+//            if (FidHttp.ResponseCode >= 200) and (FidHttp.ResponseCode < 300) then
+//            begin
+              bError := true;
+              Sleep(100);
+              Continue;
+//            end
+//            else
+//            begin
+//              raise;
+//              Break;
+//            end;
+          end;
         end;
-        memstream.SaveToStream(FileStream);
+        if bError then
+        begin
+          raise Exception.Create('传输时发生错误，请检查您的网络环境！');
+        end
+        else
+          memstream.SaveToStream(FileStream);
       end
       else
         OnTransferEnd(nil);
@@ -131,9 +145,6 @@ begin
       FreeAndNil(memstream);
     end;
     Sleep(100);
-//  except
-//    raise;
-//  end;
 end;
 
 procedure THTTPTransfer.Get(Stream: TStream);
