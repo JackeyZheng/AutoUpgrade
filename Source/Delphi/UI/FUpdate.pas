@@ -413,7 +413,8 @@ procedure TfrmAutoUpdate.DownloadAndUpdate;
 var
   TransferObj: TTransfer;
   UpdateObj: TUpdate;
-  i: Integer;
+  i, j: Integer;
+  bError: Boolean;
 begin
   FBreak := False;
   self.cmdPrev.Enabled := false;
@@ -438,19 +439,29 @@ begin
     TransferObj.OnTransfer := OnDownload;
     TransferObj.OnStatus := OnStatuse;
     UpdateObj.TransferObj := TransferObj;
-    try
-      UpdateObj.Download(UpdateObj.TempPath);
-      if FBreak then
-        Exit;
-    except
-      on e: Exception do
-      begin
-        //MessageBox(Handle, PWideChar('传输时发生错误，错误信息：' + #10#13 + e.Message), '系统提示', MB_OK);
-        Memo1.Lines.Add(Format('传输时发生了错误，错误信息：%s', [e.Message]));
-        Memo1.Lines.Add('传输终止！');
-        Exit;
+    bError := False;
+    for j := 1 to 50 do
+    begin
+      try
+        UpdateObj.Download(UpdateObj.TempPath);
+        bError := false;
+        Break;
+      except
+        bError := true;
+        Memo1.Lines.Add(Format('传输时发生了错误，正在做第【%d】重试', [j]));
+        Sleep(100);
+        Continue;
       end;
+
     end;
+    if bError then
+    begin
+      Memo1.Lines.Add('无法下载指定文件，请检查你的网络！');
+      Memo1.Lines.Add('传输终止！');
+      Exit;
+    end;
+    if FBreak then
+      Exit;
   end;
 
   lblStatuse.Caption := '';

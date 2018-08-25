@@ -9,12 +9,12 @@ type
   THTTPTransfer = class(TTransfer)
   private
     FidHttp: TIdHttp;
+    procedure InitHttp;
   protected
     function  GetOnStatus: TIdStatusEvent; override;
     procedure SetOnStatus(Value: TIdStatusEvent); override;
     procedure SetURI(Value: TIdURI); override;
   public
-    constructor Create;
     destructor Destroy; override;
     procedure Abort; override;
     procedure ClearProxySeting; override;
@@ -36,13 +36,6 @@ implementation
 uses
   System.IOUtils, IdSSLOpenSSL;
 
-constructor THTTPTransfer.Create;
-begin
-  inherited;
-  FidHttp := TIdHTTP.Create(nil);
-  // TODO -cMM: THTTPTransfer.Create default body inserted
-end;
-
 destructor THTTPTransfer.Destroy;
 begin
   if Assigned(fIdHttp) then
@@ -61,6 +54,7 @@ end;
 
 procedure THTTPTransfer.ClearProxySeting;
 begin
+  InitHttp;
   FidHttp.ProxyParams.Clear;
 end;
 
@@ -74,77 +68,71 @@ procedure THTTPTransfer.Get(FileName: String);
 var
   Position, DataLength: Int64;
   FileStream: TFileStream;
-  memstream: TMemoryStream;
   i: integer;
   bError: Boolean;
 begin
-//  try
-    if not DirectoryExists(ExtractFilePath(FileName)) then
-      TDirectory.CreateDirectory(ExtractFilePath(FileName));
-    if Tfile.Exists(FileName) then
-      FileStream := TFileStream.Create(FileName, fmOpenReadWrite)
-    else
-      FileStream := TFileStream.Create(FileName, fmCreate);
+  if not DirectoryExists(ExtractFilePath(FileName)) then
+    TDirectory.CreateDirectory(ExtractFilePath(FileName));
+  if Tfile.Exists(FileName) then
+    FileStream := TFileStream.Create(FileName, fmOpenReadWrite)
+  else
+    FileStream := TFileStream.Create(FileName, fmCreate);
 
-    FileStream.Seek(0, soEnd);
-    memstream := TMemoryStream.Create;
-    try
-      FIdHTTP.Request.Range := '';
-      FidHttp.HandleRedirects := true;
-      FidHttp.Head(Self.URI.URLEncode(Self.URL));
-      DataLength := FIdHTTP.Response.ContentLength;
+  FileStream.Seek(0, soEnd);
+
+  try
+    InitHttp;
+    bError := False;
+    for I := 0 to 99 do
+    begin
+      try
+        FidHttp.Head(Self.URI.URLEncode(Self.URL));
+        DataLength := FIdHTTP.Response.ContentLength;
+        bError := False;
+        Break;
+      except
+        bError := true;
+        sleep(50);
+        InitHttp;
+        Continue;
+      end;
+    end;
+
+    if bError then
+      raise Exception.Create('获取文件大小错误！')
+    else
+    begin
       Position := FileStream.Position;
       if Position - DataLength < 0 then
       begin
-        FIdHTTP.OnWorkBegin := Self.WorkStart;
-        FIdHTTP.OnWork := Self.Work;
-        FIdHTTP.OnWorkEnd := Self.WorkEnd;
-
-        if Position > 0 then
-        begin
-          FileStream.Seek(0 ,soBeginning);
-          memstream.CopyFrom(FileStream, Position);
-        end;
-
-        FidHttp.ConnectTimeout := 3000;
-        FidHttp.ReadTimeout := 3000;
         bError := False;
         for I := 0 to 99 do
         begin
-          Position := memstream.Size;
+          FidHttp.Head(Self.URI.URLEncode(Self.URL));
+          Position := FileStream.Position;
           FIdHttp.Request.Range := Format('%d-%d', [Position, DataLength]);
           try
-            FIdHTTP.Get(Self.URI.URLEncode(Self.URL), memstream);
+            FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
             bError := False;
             Break;
           except
-//            if (FidHttp.ResponseCode >= 200) and (FidHttp.ResponseCode < 300) then
-//            begin
-              bError := true;
-              Sleep(100);
-              Continue;
-//            end
-//            else
-//            begin
-//              raise;
-//              Break;
-//            end;
+            bError := true;
+            InitHttp;
+            Sleep(50);
+            Continue;
           end;
         end;
         if bError then
         begin
           raise Exception.Create('传输时发生错误，请检查您的网络环境！');
-        end
-        else
-          memstream.SaveToStream(FileStream);
+        end;
       end
       else
         OnTransferEnd(nil);
-    finally
-      FreeAndNil(FileStream);
-      FreeAndNil(memstream);
     end;
-    Sleep(100);
+  finally
+    FreeAndNil(FileStream);
+  end;
 end;
 
 procedure THTTPTransfer.Get(Stream: TStream);
@@ -159,6 +147,21 @@ end;
 function THTTPTransfer.GetOnStatus: TIdStatusEvent;
 begin
   Result := FidHttp.OnStatus;
+end;
+
+procedure THTTPTransfer.InitHttp;
+begin
+  // TODO -cMM: THTTPTransfer.InitHttp default body inserted
+  if Assigned(FidHttp) then
+    FreeAndNil(FIdhttp);
+  FidHttp := TIdHTTP.Create(nil);
+  FIdHTTP.Request.Range := '';
+  FidHttp.HandleRedirects := true;
+  FIdHTTP.OnWorkBegin := Self.WorkStart;
+  FIdHTTP.OnWork := Self.Work;
+  FIdHTTP.OnWorkEnd := Self.WorkEnd;
+  FidHttp.ConnectTimeout := 3000;
+  FidHttp.ReadTimeout := 3000;
 end;
 
 procedure THTTPTransfer.SetOnStatus(Value: TIdStatusEvent);
