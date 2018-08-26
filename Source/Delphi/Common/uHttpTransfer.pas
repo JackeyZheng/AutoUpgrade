@@ -136,12 +136,27 @@ begin
 end;
 
 procedure THTTPTransfer.Get(Stream: TStream);
+var
+  i: Integer;
+  bError: Boolean;
 begin
-  try
-    FidHttp.Get(Self.URI.URI, Stream);
-  except
-    raise;
+  bError := False;
+  for i := 0 to 99 do
+  begin
+    try
+      FidHttp.Head(Self.URI.URLEncode(Self.URL));
+      FidHttp.Get(Self.URI.URI, Stream);
+      bError := false;
+      Break;
+    except
+      bError := true;
+      Sleep(50);
+      InitHttp;
+      Continue;
+    end;
   end;
+  if bError then
+    raise Exception.Create('获取更新错误！');
 end;
 
 function THTTPTransfer.GetOnStatus: TIdStatusEvent;
