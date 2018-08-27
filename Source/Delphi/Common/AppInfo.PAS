@@ -18,6 +18,7 @@ type
     function GetLoginUser: string; virtual; abstract;
     function GetProxyPort: string; virtual; abstract;
     function GetProxyServer: string; virtual; abstract;
+    function GetRetryCount: Integer; virtual; abstract;
     function GetUpdateServer: string; virtual; abstract;
     procedure SetAppExeFile(const Value: string); virtual; abstract;
     procedure SetLocalPath(const Value: string); virtual; abstract;
@@ -25,6 +26,7 @@ type
     procedure SetLoginUser(const Value: string); virtual; abstract;
     procedure SetProxyPort(const Value: string); virtual; abstract;
     procedure SetProxyServer(const Value: string); virtual; abstract;
+    procedure SetRetryCount(const Value: Integer); virtual; abstract;
     procedure SetUpdateServer(const Value: string); virtual; abstract;
   public
     property AppExeFile: string read GetAppExeFile write SetAppExeFile;
@@ -35,6 +37,7 @@ type
     property LoginUser: string read GetLoginUser write SetLoginUser;
     property ProxyPort: string read GetProxyPort write SetProxyPort;
     property ProxyServer: string read GetProxyServer write SetProxyServer;
+    property RetryCount: Integer read GetRetryCount write SetRetryCount;
     property UpdateServer: string read GetUpdateServer write SetUpdateServer;
   end;
   
@@ -49,6 +52,7 @@ type
     function GetLoginUser: string; override;
     function GetProxyPort: string; override;
     function GetProxyServer: string; override;
+    function GetRetryCount: Integer; override;
     function GetUpdateServer: string; override;
     procedure SetAppExeFile(const Value: string); override;
     procedure SetLocalPath(const Value: string); override;
@@ -56,6 +60,7 @@ type
     procedure SetLoginUser(const Value: string); override;
     procedure SetProxyPort(const Value: string); override;
     procedure SetProxyServer(const Value: string); override;
+    procedure SetRetryCount(const Value: Integer); override;
     procedure SetUpdateServer(const Value: string); override;
   public
     constructor Create(IniFileName: string; Session: string);
@@ -123,6 +128,12 @@ begin
   Result := IniFile.ReadString(AppName, 'ProxyServer', '');
 end;
 
+function TIniAppInfo.GetRetryCount: Integer;
+begin
+  // TODO -cMM: TIniAppInfo.GetRetryCount default body inserted
+  Result := IniFile.ReadInteger(AppName, 'Retry', 50);;
+end;
+
 function TIniAppInfo.GetUpdateServer: string;
 begin
   Result := IniFile.ReadString(AppName, 'UpdateServer', '');
@@ -158,6 +169,12 @@ end;
 procedure TIniAppInfo.SetProxyServer(const Value: string);
 begin
   IniFile.WriteString(AppName, 'proxyServer', Value);
+end;
+
+procedure TIniAppInfo.SetRetryCount(const Value: Integer);
+begin
+  // TODO -cMM: TIniAppInfo.SetRetryCount default body inserted
+  IniFile.WriteInteger(AppName, 'Retry', Value);
 end;
 
 procedure TIniAppInfo.SetUpdateServer(const Value: string);

@@ -80,6 +80,7 @@ type
     FBreak: Boolean;
     FSuccess: Boolean;
     t: TTestThread;
+    FThread: TThread;
     procedure CheckUpdate;
     procedure OnAnalyse(Sender: TObject; Count, Current: Integer);
     procedure DownloadBegin(Sender: TObject; const AWorkCountMax: Integer);
@@ -141,7 +142,15 @@ end;
 
 procedure TfrmAutoUpdate.Button3Click(Sender: TObject);
 begin
-  FBreak := True;
+  if Assigned(FThread) then
+  begin
+    if not FThread.Finished then
+    begin
+      FBreak := True;
+      while FThread.Finished do
+        Sleep(100);
+    end;
+  end;
   Close();
 end;
 
@@ -276,12 +285,10 @@ begin
 end;
 
 procedure TfrmAutoUpdate.tbsDownloadShow(Sender: TObject);
-var
-  Thread: TThread;
 begin
-  Thread := TThread.CreateAnonymousThread(DownloadAndUpdate);
-  Thread.FreeOnTerminate := True;
-  Thread.Start;
+  FThread := TThread.CreateAnonymousThread(DownloadAndUpdate);
+  FThread.FreeOnTerminate := True;
+  FThread.Start;
 end;
 
 procedure TfrmAutoUpdate.DownloadBegin(Sender: TObject;
@@ -440,9 +447,12 @@ begin
     TransferObj.OnStatus := OnStatuse;
     UpdateObj.TransferObj := TransferObj;
     bError := False;
-    for j := 1 to 50 do
+    for j := 1 to AppInfo.RetryCount do
     begin
       try
+        if FBreak then
+          Exit;
+
         UpdateObj.Download(UpdateObj.TempPath);
         bError := false;
         Break;
@@ -471,10 +481,12 @@ begin
   begin
     pbMaster.StepIt;
     UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+
     if (UpdateObj.UpdateType = upExecute) then
       Memo1.Lines.Add(Format('正在执行 %s 文件', [UpdateObj.FileName]))
     else
       Memo1.Lines.Add(Format('正在更新%s文件', [UpdateObj.FileName]));
+
     if UpdateObj.UpdateIt then
       Memo1.Lines.Add(Format('文件 %s 更新完成!', [UpdateObj.FileName]))
     else

@@ -17,6 +17,13 @@ object frmSeting: TfrmSeting
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 12
+  object lbl1: TLabel
+    Left = 16
+    Top = 229
+    Width = 84
+    Height = 12
+    Caption = #22833#36133#37325#35797#27425#25968#65306
+  end
   object PageControl1: TPageControl
     Left = 8
     Top = 8
@@ -69,8 +76,8 @@ object frmSeting: TfrmSeting
         Caption = #26356#26032#26381#21153#22120#22320#22336#65306
       end
       object txtServer: TEdit
-        Left = 112
-        Top = 27
+        Left = 118
+        Top = 29
         Width = 289
         Height = 20
         TabOrder = 0
@@ -131,7 +138,7 @@ object frmSeting: TfrmSeting
         Top = 56
         Width = 361
         Height = 81
-        Caption = 'Ftp'#20195#29702#26381#21153#22120#35774#32622
+        Caption = #20195#29702#26381#21153#22120#35774#32622
         TabOrder = 0
         object Label4: TLabel
           Left = 16
@@ -192,5 +199,15 @@ object frmSeting: TfrmSeting
     Caption = #20851#38381
     TabOrder = 2
     OnClick = Button2Click
+  end
+  object seRetry: TSpinEdit
+    Left = 104
+    Top = 224
+    Width = 57
+    Height = 21
+    MaxValue = 100
+    MinValue = 1
+    TabOrder = 3
+    Value = 50
   end
 end

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, AppInfo;
+  Dialogs, StdCtrls, ComCtrls, AppInfo, Vcl.Samples.Spin;
 
 type
   TfrmSeting = class(TForm)
@@ -31,6 +31,8 @@ type
     chkUserSkin: TCheckBox;
     lstSkin: TListBox;
     Label6: TLabel;
+    lbl1: TLabel;
+    seRetry: TSpinEdit;
     procedure Button2Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure chkNeedLoginClick(Sender: TObject);
@@ -75,8 +77,9 @@ end;
 
 procedure TfrmSeting.FormShow(Sender: TObject);
 begin
-  GetSkinList;
+  //GetSkinList;
   txtServer.Text := FAppInfo.UpdateServer;
+  seRetry.Value := FAppInfo.RetryCount;
   if (FAppInfo.LoginUser <> '') then
   begin
     chkNeedLogin.Checked := true;
@@ -118,6 +121,7 @@ end;
 procedure TfrmSeting.Button1Click(Sender: TObject);
 begin
   FAppInfo.UpdateServer := trim(txtServer.Text);
+  FAppInfo.RetryCount := seRetry.Value;
   {if (chkNeedLogin.Checked) then
   begin
     FAppInfo.LoginUser := Trim(txtLoginUser.Text);
