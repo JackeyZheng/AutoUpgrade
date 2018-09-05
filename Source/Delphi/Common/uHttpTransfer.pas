@@ -68,6 +68,7 @@ procedure THTTPTransfer.Get(FileName: String);
 var
   Position, DataLength: Int64;
   FileStream: TFileStream;
+  MemStream: TMemoryStream;
   i: integer;
   bError: Boolean;
 begin
@@ -79,7 +80,7 @@ begin
     FileStream := TFileStream.Create(FileName, fmCreate);
 
   FileStream.Seek(0, soEnd);
-
+  MemStream := TMemoryStream.Create;
   try
     InitHttp;
     bError := False;
@@ -112,8 +113,9 @@ begin
           Position := FileStream.Position;
           FIdHttp.Request.Range := Format('%d-%d', [Position, DataLength]);
           try
-            FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
+            FIdHTTP.Get(Self.URI.URLEncode(Self.URL), MemStream);
             bError := False;
+            MemStream.SaveToStream(FileStream);
             Break;
           except
             bError := true;
@@ -131,6 +133,7 @@ begin
         OnTransferEnd(nil);
     end;
   finally
+    FreeAndNil(MemStream);
     FreeAndNil(FileStream);
   end;
 end;
