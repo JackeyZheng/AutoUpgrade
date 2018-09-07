@@ -104,8 +104,8 @@ var
 
 implementation
 
-uses FSeting, JGWUpdate, uFileAction, System.IOUtils, Winapi.ShellAPI,
-  Winapi.Windows;
+uses FSeting, JGWUpdate, uFileAction, System.IOUtils,
+  Winapi.TlHelp32, Winapi.ShellAPI;
 
 Var
   AverageSpeed: Double = 0;
