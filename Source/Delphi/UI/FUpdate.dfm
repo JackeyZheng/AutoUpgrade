@@ -177,6 +177,10 @@ object frmAutoUpdate: TfrmAutoUpdate
       Caption = 'tbsFilsh'
       ImageIndex = 3
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label4: TLabel
         Left = 16
         Top = 40
@@ -262,6 +266,10 @@ object frmAutoUpdate: TfrmAutoUpdate
       Caption = 'tbNoUpdate'
       ImageIndex = 4
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label12: TLabel
         Left = 16
         Top = 40

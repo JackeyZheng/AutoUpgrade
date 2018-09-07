@@ -88,14 +88,14 @@
 				<Platforms>Win32</Platforms>
 				<Enabled>True</Enabled>
 			</BuildGroupProject>
-			<BuildGroupProject Include="UpdateSysinfoCfg.dproj">
-				<ProjectGuid>{7225AC7F-8F3B-40C6-815B-42C350B34B8B}</ProjectGuid>
+			<BuildGroupProject Include="..\..\Test\Project\XE2\TestProject.dproj">
+				<ProjectGuid>{CB0EBFC3-3971-406A-87CF-3ABE64D58377}</ProjectGuid>
 				<Configurations>Debug</Configurations>
 				<Platforms>Win32</Platforms>
 				<Enabled>True</Enabled>
 			</BuildGroupProject>
-			<BuildGroupProject Include="..\..\Test\Project\XE2\TestProject.dproj">
-				<ProjectGuid>{CB0EBFC3-3971-406A-87CF-3ABE64D58377}</ProjectGuid>
+			<BuildGroupProject Include="UpdateSysinfoCfg.dproj">
+				<ProjectGuid>{7225AC7F-8F3B-40C6-815B-42C350B34B8B}</ProjectGuid>
 				<Configurations>Debug</Configurations>
 				<Platforms>Win32</Platforms>
 				<Enabled>True</Enabled>
@@ -120,17 +120,17 @@
 				<Platforms>Win32</Platforms>
 				<Enabled>True</Enabled>
 			</BuildGroupProject>
-			<BuildGroupProject Include="UpdateSysinfoCfg.dproj">
-				<ProjectGuid>{7225AC7F-8F3B-40C6-815B-42C350B34B8B}</ProjectGuid>
-				<Configurations>Release</Configurations>
-				<Platforms>Win32</Platforms>
-				<Enabled>True</Enabled>
-			</BuildGroupProject>
 			<BuildGroupProject Include="..\..\Test\Project\XE2\TestProject.dproj">
 				<ProjectGuid>{CB0EBFC3-3971-406A-87CF-3ABE64D58377}</ProjectGuid>
 				<Configurations>Release</Configurations>
 				<Platforms>Win32</Platforms>
 				<Enabled>False</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="UpdateSysinfoCfg.dproj">
+				<ProjectGuid>{7225AC7F-8F3B-40C6-815B-42C350B34B8B}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32</Platforms>
+				<Enabled>True</Enabled>
 			</BuildGroupProject>
 			<BuildGroupProject Include="AutoUpdate.dproj">
 				<ProjectGuid>{E1C9514A-2730-4456-BC49-C7A398FCCE80}</ProjectGuid>

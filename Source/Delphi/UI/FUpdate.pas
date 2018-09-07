@@ -14,6 +14,9 @@ const  MAX_PAGES = 3;
 const  BMP_START = 101;
 
 type
+
+  TUpdateAndCleanProcess = reference to procedure;
+
   TfrmAutoUpdate = class(TForm)
     Image1: TImage;
     XPManifest1: TXPManifest;
@@ -80,6 +83,7 @@ type
     STime: TDateTime;
     AbortTransfer: Boolean;
     FBreak: Boolean;
+    FbUpdate: Boolean;
     FSuccess: Boolean;
     t: TTestThread;
     FThread: TThread;
@@ -97,8 +101,10 @@ type
     procedure InitAppInfo;
     procedure ShowWhatsNew;
     procedure UpdaeNext(temp: TStrings);
+    procedure UpdateAndClean;
   public
     { Public declarations }
+  published
   end;
 
 
@@ -247,6 +253,8 @@ begin
   begin
     cmdNext.Enabled := True;
     tmr1.Enabled := False;
+    if FbUpdate then
+      UpdateAndClean;
   end;
 end;
 
@@ -279,7 +287,7 @@ var
   IniFile: TIniFile;
 begin
   //设置程序的外观界面
-
+  FbUpdate := False;
   TransferFactory := TTransferFactory.Create;
   PcWizard.ActivePageIndex := 0;
   Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START);
@@ -488,6 +496,7 @@ var
   UpdateObj: TUpdate;
   i, j: Integer;
   bError: Boolean;
+
 begin
   FBreak := False;
   self.cmdPrev.Enabled := false;
@@ -540,49 +549,15 @@ begin
       Exit;
   end;
   if CheckHostExe then
+  begin
+    //OnUpdateAndClean := UpdateAndClean;
+    FbUpdate := true;
     MessageBox(Handle, '软件正在运行中，请关闭软件后再继续。', '系统提示', MB_OK +
-      MB_ICONWARNING)
+      MB_ICONWARNING);
+  end
   else
   begin
-
-    lblStatuse.Caption := '';
-    Memo1.Lines.Add('');
-    Memo1.Lines.Add('更新文件。。。。。。');
-    for i := 0 to lbUpdateList.Items.Count - 1 do
-    begin
-      pbMaster.StepIt;
-      UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
-
-      if (UpdateObj.UpdateType = upExecute) then
-        Memo1.Lines.Add(Format('正在执行 %s 文件', [UpdateObj.FileName]))
-      else
-        Memo1.Lines.Add(Format('正在更新%s文件', [UpdateObj.FileName]));
-
-      if UpdateObj.UpdateIt then
-        Memo1.Lines.Add(Format('文件 %s 更新完成!', [UpdateObj.FileName]))
-      else
-        Memo1.Lines.Add(Format('文件 %s 更新失败!!', [UpdateObj.FileName]));
-    end;
-
-    Memo1.Lines.Add('');
-    Memo1.Lines.Add('删除临时文件。。。。。。');
-    for i := 0 to lbUpdateList.Items.Count - 1 do
-    begin
-      pbMaster.StepIt;
-      UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
-      DeleteFile(UpdateObj.TempPath);
-    end;
-    Memo1.Lines.Add('临时文件已删除');
-
-    Memo1.Lines.Add('');
-    Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
-    Sleep(1000);
-    ShowWhatsNew;
-    self.cmdPrev.Enabled := false;
-    self.cmdNext.Enabled := false;
-    Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
-    FBreak := True;
-    FSuccess := True;
+    UpdateAndClean;
   end;
 end;
 
@@ -645,6 +620,53 @@ begin
   end;
   FreeAndNil(temp);
   //FreeAndNil(t);
+end;
+
+procedure TfrmAutoUpdate.UpdateAndClean;
+var
+  i: Integer;
+  UpdateObj: TUpdate;
+begin
+
+  // TODO -cMM: TfrmAutoUpdate.UpdateAndClean default body inserted
+  lblStatuse.Caption := '';
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('更新文件。。。。。。');
+  for i := 0 to lbUpdateList.Items.Count - 1 do
+  begin
+    pbMaster.StepIt;
+    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+
+    if (UpdateObj.UpdateType = upExecute) then
+      Memo1.Lines.Add(Format('正在执行 %s 文件', [UpdateObj.FileName]))
+    else
+      Memo1.Lines.Add(Format('正在更新%s文件', [UpdateObj.FileName]));
+
+    if UpdateObj.UpdateIt then
+      Memo1.Lines.Add(Format('文件 %s 更新完成!', [UpdateObj.FileName]))
+    else
+      Memo1.Lines.Add(Format('文件 %s 更新失败!!', [UpdateObj.FileName]));
+  end;
+
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('删除临时文件。。。。。。');
+  for i := 0 to lbUpdateList.Items.Count - 1 do
+  begin
+    pbMaster.StepIt;
+    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+    DeleteFile(UpdateObj.TempPath);
+  end;
+  Memo1.Lines.Add('临时文件已删除');
+
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
+  Sleep(1000);
+  ShowWhatsNew;
+  self.cmdPrev.Enabled := false;
+  self.cmdNext.Enabled := false;
+  Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
+  FBreak := True;
+  FSuccess := True;
 end;
 
 end.
