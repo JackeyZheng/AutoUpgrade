@@ -104,7 +104,8 @@ var
 
 implementation
 
-uses FSeting, JGWUpdate, uFileAction, System.IOUtils, Winapi.ShellAPI;
+uses FSeting, JGWUpdate, uFileAction, System.IOUtils, Winapi.ShellAPI,
+  Winapi.Windows;
 
 Var
   AverageSpeed: Double = 0;
@@ -188,6 +189,26 @@ end;
 procedure TfrmAutoUpdate.CheckUpdate;
 var
   FileAction: TFileAction;
+
+  function   FindProcess(AFileName:   string):   boolean;
+  var
+    hSnapshot:   THandle;//用于获得进程列表
+    lppe:   TProcessEntry32;//用于查找进程
+    Found:   Boolean;//用于判断进程遍历是否完成
+  begin
+      Result   :=False;
+      hSnapshot   :=   CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,   0);//获得系统进程列表
+      lppe.dwSize   :=   SizeOf(TProcessEntry32);//在调用Process32First   API之前，需要初始化lppe记录的大小
+      Found   :=   Process32First(hSnapshot,   lppe);//将进程列表的第一个进程信息读入ppe记录中
+    while   Found   do
+    begin
+      if   ((UpperCase(ExtractFileName(lppe.szExeFile))=UpperCase(AFileName))   or   (UpperCase(lppe.szExeFile   )=UpperCase(AFileName)))   then
+      begin
+        Result   :=True;
+      end;
+        Found   :=   Process32Next(hSnapshot,   lppe);//将进程列表的下一个进程信息读入lppe记录中
+      end;
+  end;
 begin
   // TODO -cMM: TfrmAutoUpdate.CheckUpdate default body inserted
   FileAction := TFileAction.Create(Application.ExeName);
