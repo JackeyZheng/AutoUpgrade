@@ -57,6 +57,7 @@ type
     Label20: TLabel;
     lblStatuse: TLabel;
     atpgrdr1: TauAutoUpgrader;
+    tmr1: TTimer;
     procedure FormDestroy(Sender: TObject);
     procedure cmdNextClick(Sender: TObject);
     procedure cmdPrevClick(Sender: TObject);
@@ -68,6 +69,7 @@ type
     procedure tbsGetUpdateShow(Sender: TObject);
     procedure tbsWellComeShow(Sender: TObject);
     procedure tbsDownloadShow(Sender: TObject);
+    procedure tmr1Timer(Sender: TObject);
   private
     { Private declarations }
     AppInfo : TAppInfo;
@@ -81,6 +83,7 @@ type
     FSuccess: Boolean;
     t: TTestThread;
     FThread: TThread;
+    function CheckHostExe: Boolean;
     procedure CheckUpdate;
     procedure OnAnalyse(Sender: TObject; Count, Current: Integer);
     procedure DownloadBegin(Sender: TObject; const AWorkCountMax: Integer);
@@ -105,7 +108,7 @@ var
 implementation
 
 uses FSeting, JGWUpdate, uFileAction, System.IOUtils,
-  Winapi.TlHelp32, Winapi.ShellAPI;
+  Winapi.TlHelp32, Winapi.ShellAPI, Winapi.PsAPI;
 
 Var
   AverageSpeed: Double = 0;
@@ -186,11 +189,30 @@ begin
   frmSeting.ShowModal;
 end;
 
-procedure TfrmAutoUpdate.CheckUpdate;
+function TfrmAutoUpdate.CheckHostExe: Boolean;
 var
-  FileAction: TFileAction;
-
+  ExeFilePath: string;
+  function GetProcessPath(ProcessID: DWORD): string;
+  var
+    Hand: THandle;
+    ModName: Array[0..Max_Path-1] of Char;
+    hMod: HModule;
+    n: DWORD;
+  begin
+    Result:='';
+    Hand:=OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ,False,ProcessID);
+    if Hand>0 then
+    try
+     ENumProcessModules(Hand,@hMod,Sizeof(hMod),n);
+     if GetModuleFileNameEx(Hand,hMod,ModName,Sizeof(ModName))>0 then
+       //Result:=ExtractFilePath(ModName);
+       Result := ModName;
+    except
+    end;
+  end;
   function   FindProcess(AFileName:   string):   boolean;
+  var
+    ProcessPath: string;
   var
     hSnapshot:   THandle;//用于获得进程列表
     lppe:   TProcessEntry32;//用于查找进程
@@ -202,13 +224,36 @@ var
       Found   :=   Process32First(hSnapshot,   lppe);//将进程列表的第一个进程信息读入ppe记录中
     while   Found   do
     begin
-      if   ((UpperCase(ExtractFileName(lppe.szExeFile))=UpperCase(AFileName))   or   (UpperCase(lppe.szExeFile   )=UpperCase(AFileName)))   then
+      ProcessPath := GetProcessPath(lppe.th32ProcessID);
+      //if   ((UpperCase(ExtractFileName(lppe.szExeFile))=UpperCase(AFileName))   or   (UpperCase(lppe.szExeFile   )=UpperCase(AFileName)))   then
+      if UpperCase(ProcessPath) = UpperCase(AFileName) then
       begin
         Result   :=True;
       end;
         Found   :=   Process32Next(hSnapshot,   lppe);//将进程列表的下一个进程信息读入lppe记录中
       end;
   end;
+
+begin
+  // TODO -cMM: TfrmAutoUpdate.CheckHostExe default body inserted
+  ExeFilePath := IncludeTrailingBackslash(AppInfo.LocalPath) + AppInfo.AppExeFile;
+  Result := FindProcess(ExeFilePath);
+  if Result then
+  begin
+    cmdNext.Enabled := False;
+    tmr1.Enabled := true;
+  end
+  else
+  begin
+    cmdNext.Enabled := True;
+    tmr1.Enabled := False;
+  end;
+end;
+
+procedure TfrmAutoUpdate.CheckUpdate;
+var
+  FileAction: TFileAction;
+
 begin
   // TODO -cMM: TfrmAutoUpdate.CheckUpdate default body inserted
   FileAction := TFileAction.Create(Application.ExeName);
@@ -494,45 +539,51 @@ begin
     if FBreak then
       Exit;
   end;
-
-  lblStatuse.Caption := '';
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('更新文件。。。。。。');
-  for i := 0 to lbUpdateList.Items.Count - 1 do
+  if CheckHostExe then
+    MessageBox(Handle, '软件正在运行中，请关闭软件后再继续。', '系统提示', MB_OK +
+      MB_ICONWARNING)
+  else
   begin
-    pbMaster.StepIt;
-    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
 
-    if (UpdateObj.UpdateType = upExecute) then
-      Memo1.Lines.Add(Format('正在执行 %s 文件', [UpdateObj.FileName]))
-    else
-      Memo1.Lines.Add(Format('正在更新%s文件', [UpdateObj.FileName]));
+    lblStatuse.Caption := '';
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('更新文件。。。。。。');
+    for i := 0 to lbUpdateList.Items.Count - 1 do
+    begin
+      pbMaster.StepIt;
+      UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
 
-    if UpdateObj.UpdateIt then
-      Memo1.Lines.Add(Format('文件 %s 更新完成!', [UpdateObj.FileName]))
-    else
-      Memo1.Lines.Add(Format('文件 %s 更新失败!!', [UpdateObj.FileName]));
+      if (UpdateObj.UpdateType = upExecute) then
+        Memo1.Lines.Add(Format('正在执行 %s 文件', [UpdateObj.FileName]))
+      else
+        Memo1.Lines.Add(Format('正在更新%s文件', [UpdateObj.FileName]));
+
+      if UpdateObj.UpdateIt then
+        Memo1.Lines.Add(Format('文件 %s 更新完成!', [UpdateObj.FileName]))
+      else
+        Memo1.Lines.Add(Format('文件 %s 更新失败!!', [UpdateObj.FileName]));
+    end;
+
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('删除临时文件。。。。。。');
+    for i := 0 to lbUpdateList.Items.Count - 1 do
+    begin
+      pbMaster.StepIt;
+      UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+      DeleteFile(UpdateObj.TempPath);
+    end;
+    Memo1.Lines.Add('临时文件已删除');
+
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
+    Sleep(1000);
+    ShowWhatsNew;
+    self.cmdPrev.Enabled := false;
+    self.cmdNext.Enabled := false;
+    Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
+    FBreak := True;
+    FSuccess := True;
   end;
-
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('删除临时文件。。。。。。');
-  for i := 0 to lbUpdateList.Items.Count - 1 do
-  begin
-    pbMaster.StepIt;
-    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
-    DeleteFile(UpdateObj.TempPath);
-  end;
-  Memo1.Lines.Add('临时文件已删除');
-
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
-  Sleep(1000);
-  ShowWhatsNew;
-  self.cmdPrev.Enabled := false;
-  self.cmdNext.Enabled := false;
-  Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
-  FBreak := True;
-  FSuccess := True;
 end;
 
 procedure TfrmAutoUpdate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -556,6 +607,11 @@ begin
   end;
 end;
 
+procedure TfrmAutoUpdate.tmr1Timer(Sender: TObject);
+begin
+  CheckHostExe;
+end;
+
 procedure TfrmAutoUpdate.UpdaeNext(temp: TStrings);
 begin
   if temp = nil then
@@ -575,6 +631,9 @@ begin
       Label3.Caption := Format('共有 %d 个可用更新', [lbUpdateList.Items.Count]);
       self.cmdPrev.Enabled := true;
       self.cmdNext.Enabled := true;
+      if CheckHostExe then
+        MessageBox(Handle, '软件正在运行中，请关闭软件后再继续。', '系统提示', MB_OK +
+          MB_ICONWARNING);
     end
     else
     begin

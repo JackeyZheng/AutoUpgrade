@@ -109,11 +109,11 @@ begin
         bError := False;
         for I := 0 to 99 do
         begin
-//          FidHttp.Head(Self.URI.URLEncode(Self.URL));
-//          Position := FileStream.Position;
-//          FIdHttp.Request.Range := Format('%d-%d', [Position, DataLength]);
+          FidHttp.Head(Self.URI.URLEncode(Self.URL));
+          Position := FileStream.Position;
+          FIdHttp.Request.Range := Format('%d-%d', [Position, DataLength]);
           try
-            MemStream.Position := 0;
+            //MemStream.Position := 0;
             FIdHTTP.Get(Self.URI.URLEncode(Self.URL), MemStream);
             bError := False;
             MemStream.SaveToStream(FileStream);
