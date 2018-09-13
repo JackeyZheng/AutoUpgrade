@@ -8,10 +8,12 @@ uses
 
 type
   TAnalyseCmd = class(TObject)
+  private
   protected
+    function CreateNewUpdate(Source: TUpdate): TUpdate;
     function CreateUpdateDecorator(UpDate: TUpdate): TUpdateDecorator; virtual;
   public
-    function Run(Update: TUpdate): TUpdate; virtual; abstract;
+    function Run(Update: TUpdate): TUpdate; virtual;
   end;
   
   TVersionAnalyse = class(TAnalyseCmd)
@@ -59,7 +61,14 @@ type
 
 implementation
 
-uses uFileAction;
+uses uFileAction, System.IOUtils;
+
+function TAnalyseCmd.CreateNewUpdate(Source: TUpdate): TUpdate;
+begin
+  Result := TFileUpdate.Create;
+  Result.Assign(Source);
+  // TODO -cMM: TAnalyseCmd.CreateNewUpdate default body inserted
+end;
 
 {
 ********************************* TAnalyseCmd **********************************
@@ -71,6 +80,13 @@ begin
   except
     Raise;
   end;
+end;
+
+function TAnalyseCmd.Run(Update: TUpdate): TUpdate;
+begin
+  Result := nil;
+  if not TFile.Exists(Update.LocalFile) then
+    Result := CreateUpdateDecorator(CreateNewUpdate(Update));
 end;
 
 function TVersionAnalyse.CompareVersionString(ALeft, ARight: string): Integer;
@@ -113,21 +129,18 @@ var
   FileAction: TFileAction;
 begin
   //Update.LocalFile
-  Result := nil;
-  FileAction := TFileAction.Create(Update.LocalFile);
-  try
-    if (FileAction.FileExit) then
-      begin
+  Result := inherited;
+  if not Assigned(Result) then
+  begin
+    FileAction := TFileAction.Create(Update.LocalFile);
+    try
       if CompareVersionString(Update.NewVersion, FileAction.GetFileVersionAsText) > 0 then
-      //if Update.NewVersion > FileAction.GetFileVersionAsText then
       begin
-        NewUpdate := TFileUpdate.Create;
-        NewUpdate.Assign(Update);
-        Result := CreateUpdateDecorator(NewUpdate);
-      end;
+        Result := CreateUpdateDecorator(CreateNewUpdate(Update));
+      end
+    finally
+      FreeAndNil(FileAction);
     end;
-  finally
-    FreeAndNil(FileAction);
   end;
 end;
 
@@ -135,13 +148,9 @@ end;
 ******************************* TDefaultAnalyse ********************************
 }
 function TDefaultAnalyse.Run(Update: TUpdate): TUpdate;
-var
-  NewUpdate: TUpdate;
 begin
   // TODO -cMM: TDefaultAnalyse.Run default body inserted
-  NewUpdate := TFileUpdate.Create;
-  NewUpdate.Assign(Update);
-  Result := CreateUpdateDecorator(NewUpdate);
+  Result := CreateUpdateDecorator(CreateNewUpdate(Update));
 end;
 
 {
@@ -152,20 +161,21 @@ var
   FileAction: TFileAction;
   NewUpdate: TUpdate;
 begin
-  Result := nil;
-  FileAction := TFileAction.Create(Update.LocalFile);
-  try
-    if (FileAction.FileExit) then
-    begin
+  Result := inherited;
+  if not Assigned(Result) then
+  begin
+    FileAction := TFileAction.Create(Update.LocalFile);
+    try
       if (FileAction.GetFileDate < Update.NewDate) then
       begin
-        NewUpdate := TFileUpdate.Create;
-        NewUpdate.Assign(Update);
-        Result := CreateUpdateDecorator(NewUpdate);
+//        NewUpdate := TFileUpdate.Create;
+//        NewUpdate.Assign(Update);
+        //Result := CreateUpdateDecorator(NewUpdate);
+        Result := CreateUpdateDecorator(CreateNewUpdate(Update));
       end;
+    finally
+      freeAndNil(FileAction);
     end;
-  finally
-    freeAndNil(FileAction);
   end;
 end;
 
@@ -175,22 +185,19 @@ end;
 function TSizeAnalyse.Run(Update: TUpdate): TUpdate;
 var
   FileAction: TFileAction;
-  NewUpdate: TUpdate;
 begin
-  Result := nil;
-  FileAction := TFileAction.Create(Update.LocalFile);
-  try
-    if (FileAction.FileExit) then
-    begin
+  Result := inherited;
+  if not Assigned(Result) then
+  begin
+    FileAction := TFileAction.Create(Update.LocalFile);
+    try
       if (FileAction.GetFileSize > Update.NewSize) then
       begin
-        NewUpdate := TFileUpdate.Create;
-        NewUpdate.Assign(Update);
-        Result := CreateUpdateDecorator(NewUpdate);
+        Result := CreateUpdateDecorator(CreateNewUpdate(Update));
       end;
+    finally
+      FreeAndNil(FileAction);
     end;
-  finally
-    FreeAndNil(FileAction);
   end;
 end;
 
@@ -200,28 +207,19 @@ end;
 function TCreateAnalyse.Run(Update: TUpdate): TUpdate;
 var
   FileAction: TFileAction;
-  NewUpdate: TUpdate;
 begin
-  Result := nil;
-  FileAction := TFileAction.Create(Update.LocalFile);
-  try
-    if (not FileAction.FileExit) then
-    begin
-      NewUpdate := TFileUpdate.Create;
-      NewUpdate.Assign(Update);
-      Result := CreateUpdateDecorator(NewUpdate);
-    end
-    else
-    begin
+  Result := inherited;
+  if not Assigned(Result) then
+  begin
+    FileAction := TFileAction.Create(Update.LocalFile);
+    try
       if (FileAction.GetFileDate < Update.NewDate) then
       begin
-        NewUpdate := TFileUpdate.Create;
-        NewUpdate.Assign(Update);
-        Result := CreateUpdateDecorator(NewUpdate);
+        Result := CreateUpdateDecorator(CreateNewUpdate(Update));
       end;
+    finally
+      FreeAndNil(FileAction);
     end;
-  finally
-    FreeAndNil(FileAction);
   end;
 end;
 

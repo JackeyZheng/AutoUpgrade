@@ -121,7 +121,7 @@ begin
     else
     begin
       temFile.Version := '0.0.0.0';
-      temFile.ChkType := '4';
+      temFile.ChkType := '2';
     end;
     temFile.FileSize := inttostr(FileAction.GetFileSize);
     temFile.ModyDatetime := DatetimeTostr(FileAction.GetFileDate, AFormatSettings);
