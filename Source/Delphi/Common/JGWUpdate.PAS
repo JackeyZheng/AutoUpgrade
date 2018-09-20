@@ -71,6 +71,7 @@ type
     function GetChkType: TChkType; virtual;
     function GetFileName: string; virtual;
     function GetLocalFile: string; virtual;
+    function GetMd5Code: String; virtual;
     function GetNewDate: TDateTime; virtual;
     function GetNewVersion: string; virtual;
     function GetTempPath: string; virtual;
@@ -87,6 +88,7 @@ type
     procedure SetUpdateType(Value: TUpdateType); virtual;
     procedure SetUpdateURL(const Value: string); virtual;
     function GetNewSize: Int64; virtual;
+    procedure SetMd5Code(const Value: String); virtual;
     procedure SetNewSize(const Value: Int64); virtual;
   public
     /// <summary>
@@ -137,7 +139,7 @@ type
     ///   本地文件的相对路径。
     /// </summary>
     property LocalFile: string read GetLocalFile write SetLocalFile;
-    property Md5Code: String read FMd5Code write FMd5Code;
+    property Md5Code: String read GetMd5Code write SetMd5Code;
     /// <summary>
     ///   新文件的日期
     /// </summary>
@@ -208,6 +210,7 @@ type
     function GetChkType: TChkType; override;
     function GetFileName: string; override;
     function GetLocalFile: string; override;
+    function GetMd5Code: String; override;
     function GetNewDate: TDateTime; override;
     function GetNewVersion: string; override;
     function GetTempPath: string; override;
@@ -224,6 +227,7 @@ type
     procedure SetUpdateType(Value: TUpdateType); override;
     procedure SetUpdateURL(const Value: string); override;
     function GetNewSize: Int64; override;
+    procedure SetMd5Code(const Value: String); override;
     procedure SetNewSize(const Value: Int64); override;
   public
     /// <summary>
@@ -322,11 +326,15 @@ begin
   Update.ChkType := self.ChkType;
   Update.NewSize := self.NewSize;
   Update.UpdateType := self.UpdateType;
+  Update.Md5Code := Self.Md5Code;
 end;
 
 function TUpdate.CheckDownloadFile(AEncrypt: IEncrypt): Boolean;
 begin
-  Result := AEncrypt.EncodeFile(TempPath) = Md5Code;
+  if ChkType = chkByVersion then
+    Result := AEncrypt.EncodeFile(TempPath) = Md5Code
+  else
+    Result := True;
   // TODO -cMM: TUpdate.CheckDownloadFile default body inserted
 end;
 
@@ -343,6 +351,11 @@ end;
 function TUpdate.GetLocalFile: string;
 begin
   Result := FLocalFile;
+end;
+
+function TUpdate.GetMd5Code: String;
+begin
+  Result := FMd5Code;
 end;
 
 function TUpdate.GetNewDate: TDateTime;
@@ -427,6 +440,11 @@ begin
   Result := FNewSize;
 end;
 
+procedure TUpdate.SetMd5Code(const Value: String);
+begin
+  FMd5Code := Value;
+end;
+
 procedure TUpdate.SetNewSize(const Value: Int64);
 begin
   FNewSize := Value;
@@ -492,6 +510,11 @@ end;
 function TUpdateDecorator.GetLocalFile: string;
 begin
   Result := FUpdate.GetLocalFile;
+end;
+
+function TUpdateDecorator.GetMd5Code: String;
+begin
+  Result := Update.Md5Code;
 end;
 
 function TUpdateDecorator.GetNewDate: TDateTime;
@@ -586,6 +609,11 @@ end;
 function TUpdateDecorator.GetNewSize: Int64;
 begin
   Result := FUpdate.GetNewSize;
+end;
+
+procedure TUpdateDecorator.SetMd5Code(const Value: String);
+begin
+  Update.Md5Code := Value;
 end;
 
 procedure TUpdateDecorator.SetNewSize(const Value: Int64);

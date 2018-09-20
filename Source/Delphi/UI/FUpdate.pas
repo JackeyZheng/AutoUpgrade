@@ -626,63 +626,85 @@ procedure TfrmAutoUpdate.UpdateAndClean;
 var
   i: Integer;
   UpdateObj: TUpdate;
-  Encrypt: IEncrypt;
+
+  function CheckDownloadFile: Boolean;
+  var
+    Encrypt: IEncrypt;
+    i: Integer;
+  begin
+    Encrypt := TEncryptFacade.Create(etMD5);
+    try
+      lblStatuse.Caption := '';
+      Memo1.Lines.Add('');
+      Memo1.Lines.Add('检查下载文件。。。。。。');
+      Result := True;
+      for i := 0 to lbUpdateList.Items.Count - 1 do
+      begin
+        pbMaster.StepIt;
+        UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+
+        if not UpdateObj.CheckDownloadFile(Encrypt) then
+        begin
+          Result := False;
+          Memo1.Lines.Add(Format('文件[%s]校验失败，请重新下载。', [UpdateObj.FileName]));
+          DeleteFile(UpdateObj.TempPath);
+        end;
+      end;
+    finally
+      Encrypt := nil;
+    end;
+  end;
 begin
 
   // TODO -cMM: TfrmAutoUpdate.UpdateAndClean default body inserted
-  Encrypt := TEncryptFacade.Create(etMD5);
-  lblStatuse.Caption := '';
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('检查下载文件。。。。。。');
-  for i := 0 to lbUpdateList.Items.Count - 1 do
+
+  if CheckDownloadFile then
   begin
-    pbMaster.StepIt;
-    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
-    if UpdateObj.CheckDownloadFile(nil) then
+    lblStatuse.Caption := '';
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('更新文件。。。。。。');
+    for i := 0 to lbUpdateList.Items.Count - 1 do
     begin
+      pbMaster.StepIt;
+      UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
 
+      if (UpdateObj.UpdateType = upExecute) then
+        Memo1.Lines.Add(Format('正在执行 %s 文件', [UpdateObj.FileName]))
+      else
+        Memo1.Lines.Add(Format('正在更新%s文件', [UpdateObj.FileName]));
+
+      if UpdateObj.UpdateIt then
+        Memo1.Lines.Add(Format('文件 %s 更新完成!', [UpdateObj.FileName]))
+      else
+        Memo1.Lines.Add(Format('文件 %s 更新失败!!', [UpdateObj.FileName]));
     end;
-  end;
-  Encrypt := nil;
 
-  lblStatuse.Caption := '';
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('更新文件。。。。。。');
-  for i := 0 to lbUpdateList.Items.Count - 1 do
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('删除临时文件。。。。。。');
+    for i := 0 to lbUpdateList.Items.Count - 1 do
+    begin
+      pbMaster.StepIt;
+      UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+      DeleteFile(UpdateObj.TempPath);
+    end;
+    Memo1.Lines.Add('临时文件已删除');
+
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
+    Sleep(1000);
+    ShowWhatsNew;
+    self.cmdPrev.Enabled := false;
+    self.cmdNext.Enabled := false;
+    Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
+    FBreak := True;
+    FSuccess := True;
+  end
+  else
   begin
-    pbMaster.StepIt;
-    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
-
-    if (UpdateObj.UpdateType = upExecute) then
-      Memo1.Lines.Add(Format('正在执行 %s 文件', [UpdateObj.FileName]))
-    else
-      Memo1.Lines.Add(Format('正在更新%s文件', [UpdateObj.FileName]));
-
-    if UpdateObj.UpdateIt then
-      Memo1.Lines.Add(Format('文件 %s 更新完成!', [UpdateObj.FileName]))
-    else
-      Memo1.Lines.Add(Format('文件 %s 更新失败!!', [UpdateObj.FileName]));
+    cmdPrev.Enabled := true;
+    cmdNext.Enabled :=False;
+    FSuccess := False;
   end;
-
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('删除临时文件。。。。。。');
-  for i := 0 to lbUpdateList.Items.Count - 1 do
-  begin
-    pbMaster.StepIt;
-    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
-    DeleteFile(UpdateObj.TempPath);
-  end;
-  Memo1.Lines.Add('临时文件已删除');
-
-  Memo1.Lines.Add('');
-  Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
-  Sleep(1000);
-  ShowWhatsNew;
-  self.cmdPrev.Enabled := false;
-  self.cmdNext.Enabled := false;
-  Image1.Picture.Bitmap.LoadFromResourceID(HInstance, BMP_START + 3);
-  FBreak := True;
-  FSuccess := True;
 end;
 
 end.
