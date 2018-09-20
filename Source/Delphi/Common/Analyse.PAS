@@ -171,6 +171,7 @@ begin
     Update.UpdateURL := Node.ChildNodes['FileURL'].Text;
     Update.FileName := Node.ChildNodes['FileName'].Text;
     Update.NewSize := strtoInt64(Node.ChildNodes['FileSize'].Text);
+    Update.Md5Code := Node.ChildNodes['md5'].Text;
     tmpUpdate := Update.Analyse;
     if (Assigned(tmpUpdate)) then
     begin

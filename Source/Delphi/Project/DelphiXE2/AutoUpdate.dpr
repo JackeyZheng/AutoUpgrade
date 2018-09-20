@@ -14,7 +14,8 @@ uses
   Transfer in '..\..\Common\Transfer.pas',
   uCheckUpdate in '..\..\Common\uCheckUpdate.pas',
   uFileAction in '..\..\Common\uFileAction.pas',
-  uHttpTransfer in '..\..\Common\uHttpTransfer.pas';
+  uHttpTransfer in '..\..\Common\uHttpTransfer.pas',
+  Encrypt in '..\..\..\..\..\JGWCore\Source\Delphi\Common\Encrypt.PAS';
 
 {$R *.res}
 

@@ -114,7 +114,7 @@ var
 implementation
 
 uses FSeting, JGWUpdate, uFileAction, System.IOUtils,
-  Winapi.TlHelp32, Winapi.ShellAPI, Winapi.PsAPI;
+  Winapi.TlHelp32, Winapi.ShellAPI, Winapi.PsAPI, Encrypt;
 
 Var
   AverageSpeed: Double = 0;
@@ -501,7 +501,7 @@ begin
   FBreak := False;
   self.cmdPrev.Enabled := false;
   self.cmdNext.Enabled := false;
-  pbMaster.Max := lbUpdateList.Items.Count * 3;
+  pbMaster.Max := lbUpdateList.Items.Count * 4;
   pbMaster.Position := 0;
   pbDetail.Position := 0;
   memo1.Perform(EM_SCROLLCARET, 0, 0 );
@@ -626,9 +626,25 @@ procedure TfrmAutoUpdate.UpdateAndClean;
 var
   i: Integer;
   UpdateObj: TUpdate;
+  Encrypt: IEncrypt;
 begin
 
   // TODO -cMM: TfrmAutoUpdate.UpdateAndClean default body inserted
+  Encrypt := TEncryptFacade.Create(etMD5);
+  lblStatuse.Caption := '';
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('检查下载文件。。。。。。');
+  for i := 0 to lbUpdateList.Items.Count - 1 do
+  begin
+    pbMaster.StepIt;
+    UpdateObj := lbUpdateList.Items.objects[i] as TUpdate;
+    if UpdateObj.CheckDownloadFile(nil) then
+    begin
+
+    end;
+  end;
+  Encrypt := nil;
+
   lblStatuse.Caption := '';
   Memo1.Lines.Add('');
   Memo1.Lines.Add('更新文件。。。。。。');

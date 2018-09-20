@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls,
-  Vcl.FileCtrl, ShlwApi, Xml.XMLIntf, Xml.XMLDoc, Vcl.ExtCtrls;
+  Vcl.FileCtrl, ShlwApi, Xml.XMLIntf, Xml.XMLDoc, Vcl.ExtCtrls,Encrypt;
 
 type
   TUpdateFile = class(TInterfacedObject)
@@ -19,6 +19,7 @@ type
     FFileSize: string;
     FDeskFile: string;
     FDeskDir: string;
+    FMd5Code: String;
     function isBinFile(FileName: string): Boolean;
   public
     constructor Create;
@@ -28,6 +29,7 @@ type
     property FileName: string read FFileName write FFileName;
     property FileSize: string read FFileSize write FFileSize;
     property FileURL: string read FFileURL write FFileURL;
+    property Md5Code: String read FMd5Code write FMd5Code;
     property ModyDatetime: string read FModyDatetime write FModyDatetime;
     property UpdateType: string read FUpdateType write FUpdateType;
     property Version: string read FVersion write FVersion;
@@ -71,6 +73,7 @@ type
     btnAddDir: TButton;
     lbledtFilter: TLabeledEdit;
     rgUpdateType: TRadioGroup;
+    procedure FormDestroy(Sender: TObject);
     procedure btnOpenClick(Sender: TObject);
     procedure btn1Click(Sender: TObject);
     procedure edtDirChange(Sender: TObject);
@@ -82,6 +85,7 @@ type
     procedure btnAddDirClick(Sender: TObject);
     procedure btnBatchSaveClick(Sender: TObject);
   private
+    FEncrypt: IEncrypt;
     function GetRelativePath(const Path, AFile: string): string;
     procedure CreateXMLNode(root: IXmlNode; uFile: TUpdateFile);
   public
@@ -125,6 +129,7 @@ begin
     end;
     temFile.FileSize := inttostr(FileAction.GetFileSize);
     temFile.ModyDatetime := DatetimeTostr(FileAction.GetFileDate, AFormatSettings);
+    temFile.Md5Code := FrmNCreateXML.FEncrypt.EncodeFile(FileName);
   finally
     freeandnil(FileAction);
   end;
@@ -300,6 +305,11 @@ begin
   TmpList.Free;
 end;
 
+procedure TFrmNCreateXML.FormDestroy(Sender: TObject);
+begin
+  FEncrypt := nil;
+end;
+
 procedure TFrmNCreateXML.btnAddDirClick(Sender: TObject);
 var
   temp, newFile: string;
@@ -376,6 +386,7 @@ var
   node7: IXmlNode;
   node8: IXmlNode;
   node9: IXmlNode;
+  Node10: IXMLNode;
 begin
   node1 := root.AddChild('UpdateFile');
 
@@ -405,6 +416,8 @@ begin
     node9.Text := uFile.DeskDir + '\' + uFile.DeskFile
   else
     node9.Text := uFile.DeskFile;
+  Node10 := node1.AddChild('md5');
+  Node10.Text := uFile.Md5Code;
 end;
 
 procedure TFrmNCreateXML.edtDirChange(Sender: TObject);
@@ -416,6 +429,7 @@ end;
 procedure TFrmNCreateXML.FormCreate(Sender: TObject);
 begin
   ListBox1.Items.Clear;
+  FEncrypt := TEncryptFacade.Create(etMD5);
 end;
 
 function TFrmNCreateXML.GetRelativePath(const Path, AFile: string): string;

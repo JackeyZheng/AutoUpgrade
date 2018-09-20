@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Windows, Messages, Classes, Graphics, Controls,
-  Forms, Dialogs, Transfer;
+  Forms, Dialogs, Transfer, Encrypt;
 
 type
   /// <summary>
@@ -59,6 +59,7 @@ type
     FChkType: TChkType;
     FFileName: string;
     FLocalFile: string;
+    FMd5Code: String;
     FNewDate: TDateTime;
     FNewVersion: string;
     FTempPath: string;
@@ -96,6 +97,7 @@ type
     ///   信息深fu'zhi
     /// </summary>
     procedure AssignTo(Dest: TPersistent); override;
+    function CheckDownloadFile(AEncrypt: IEncrypt): Boolean;
     /// <summary>
     ///   下载数据到指定路径。
     /// </summary>
@@ -135,6 +137,7 @@ type
     ///   本地文件的相对路径。
     /// </summary>
     property LocalFile: string read GetLocalFile write SetLocalFile;
+    property Md5Code: String read FMd5Code write FMd5Code;
     /// <summary>
     ///   新文件的日期
     /// </summary>
@@ -319,6 +322,12 @@ begin
   Update.ChkType := self.ChkType;
   Update.NewSize := self.NewSize;
   Update.UpdateType := self.UpdateType;
+end;
+
+function TUpdate.CheckDownloadFile(AEncrypt: IEncrypt): Boolean;
+begin
+  Result := AEncrypt.EncodeFile(TempPath) = Md5Code;
+  // TODO -cMM: TUpdate.CheckDownloadFile default body inserted
 end;
 
 function TUpdate.GetChkType: TChkType;
