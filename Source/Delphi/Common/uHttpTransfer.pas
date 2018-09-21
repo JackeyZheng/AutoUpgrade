@@ -67,20 +67,24 @@ end;
 procedure THTTPTransfer.Get(FileName: String);
 var
   Position, DataLength: Int64;
-  FileStream: TFileStream;
-  //MemStream: TMemoryStream;
+  //FileStream: TFileStream;
+  MemStream: TMemoryStream;
   i: integer;
   bError: Boolean;
 begin
   if not DirectoryExists(ExtractFilePath(FileName)) then
     TDirectory.CreateDirectory(ExtractFilePath(FileName));
+  MemStream := TMemoryStream.Create;
+//  MemStream.LoadFromFile(FileName);
   if Tfile.Exists(FileName) then
-    FileStream := TFileStream.Create(FileName, fmOpenReadWrite)
-  else
-    FileStream := TFileStream.Create(FileName, fmCreate);
+     MemStream.LoadFromFile(FileName);
+    //FileStream := TFileStream.Create(FileName, fmOpenReadWrite)
+//  else
+//    FileStream := TFileStream.Create(FileName, fmCreate);
 
-  FileStream.Seek(0, soEnd);
+  //FileStream.Seek(0, soEnd);
   //MemStream := TMemoryStream.Create;
+  MemStream.Seek(0, soEnd);
   try
     InitHttp;
     bError := False;
@@ -103,22 +107,28 @@ begin
       raise Exception.Create('获取文件大小错误！')
     else
     begin
-      Position := FileStream.Position;
+      //Position := FileStream.Position;
+      Position := MemStream.Position;
       if Position - DataLength < 0 then
       begin
         bError := False;
         for I := 0 to 99 do
         begin
           FidHttp.Head(Self.URI.URLEncode(Self.URL));
-          Position := FileStream.Position;
+          //Position := FileStream.Position;
+          MemStream.Seek(0, soEnd);
+          Position := MemStream.Position;
           FIdHttp.Request.Range := Format('%d-%d', [Position, DataLength]);
           try
             //MemStream.Position := 0;
-            FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
+            //FIdHTTP.Get(Self.URI.URLEncode(Self.URL), FileStream);
+            FIdHTTP.Get(Self.URI.URLEncode(Self.URL), MemStream);
             bError := False;
+            MemStream.SaveToFile(FileName);
             //MemStream.SaveToStream(FileStream);
             Break;
           except
+            MemStream.SaveToFile(FileName);
             bError := true;
             InitHttp;
             Sleep(50);
@@ -134,8 +144,8 @@ begin
         OnTransferEnd(nil);
     end;
   finally
-    //FreeAndNil(MemStream);
-    FreeAndNil(FileStream);
+    FreeAndNil(MemStream);
+    //FreeAndNil(FileStream);
   end;
 end;
 

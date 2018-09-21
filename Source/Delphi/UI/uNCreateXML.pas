@@ -120,7 +120,8 @@ begin
     if temFile.isBinFile(FileName) then
     begin
       temFile.ChkType := '1';
-      temFile.Version := FileAction.GetFileVersionAsText
+      temFile.Version := FileAction.GetFileVersionAsText;
+      temFile.Md5Code := FrmNCreateXML.FEncrypt.EncodeFile(FileName);
     end
     else
     begin
@@ -129,7 +130,6 @@ begin
     end;
     temFile.FileSize := inttostr(FileAction.GetFileSize);
     temFile.ModyDatetime := DatetimeTostr(FileAction.GetFileDate, AFormatSettings);
-    temFile.Md5Code := FrmNCreateXML.FEncrypt.EncodeFile(FileName);
   finally
     freeandnil(FileAction);
   end;
