@@ -332,7 +332,10 @@ end;
 function TUpdate.CheckDownloadFile(AEncrypt: IEncrypt): Boolean;
 begin
   if ChkType = chkByVersion then
-    Result := AEncrypt.EncodeFile(TempPath) = Md5Code
+    if Md5Code <> '' then
+      Result := AEncrypt.EncodeFile(TempPath) = Md5Code
+    else
+      Result := True
   else
     Result := True;
   // TODO -cMM: TUpdate.CheckDownloadFile default body inserted
@@ -646,7 +649,9 @@ begin
     if not TDirectory.Exists(ExtractFilePath(LocalFile)) then
       TDirectory.CreateDirectory(ExtractFilePath(LocalFile));
 
-    MoveFile(TempPath, LocalFile);
+    //MoveFile(TempPath, LocalFile);
+    CopyFile(TempPath, LocalFile);
+    //TFile.Copy(TempPath, LocalFile);
     Result := true;
   except
     Result := false;

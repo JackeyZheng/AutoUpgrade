@@ -107,6 +107,9 @@ type
   published
   end;
 
+  //把日期格式转成的字符串,DateSeparator支持-/.
+  function JGWDateTransToStr(ADTime:TDateTime;ADateSeparator:char):string;
+
 
 var
   frmAutoUpdate: TfrmAutoUpdate;
@@ -120,6 +123,21 @@ Var
   AverageSpeed: Double = 0;
 
 {$R *.dfm}
+
+//把日期格式转成的字符串,DateSeparator支持-/.
+function JGWDateTransToStr(ADTime:TDateTime;ADateSeparator:char):string;
+var
+  fs: TFormatSettings;
+begin
+  // 设定程序本身所使用的日期时间格式
+  fs.LongDateFormat := 'yyyy'+ADateSeparator+'MM'+ADateSeparator+'dd';
+  fs.ShortDateFormat := 'yyyy'+ADateSeparator+'MM'+ADateSeparator+'dd';
+  fs.LongTimeFormat := 'hh:nn:ss';
+  fs.ShortTimeFormat := 'hh:nn:ss';
+  fs.DateSeparator := ADateSeparator;
+  fs.timeSeparator := ':';
+  Result:=DateToStr(ADTime,fs);
+end;
 
 procedure TfrmAutoUpdate.FormDestroy(Sender: TObject);
 begin
@@ -692,6 +710,10 @@ begin
     Memo1.Lines.Add('');
     Memo1.Lines.Add('更新已经完成，点击关闭退出程序！');
     Sleep(1000);
+    Memo1.Lines.SaveToFile(ExtractFilePath(Application.ExeName) +
+            TPath.GetFileNameWithoutExtension(Application.ExeName) +
+            JGWDateTransToStr(Date, '-') +
+            '.log');
     ShowWhatsNew;
     self.cmdPrev.Enabled := false;
     self.cmdNext.Enabled := false;
