@@ -5,36 +5,9 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls,
-  Vcl.FileCtrl, ShlwApi, Xml.XMLIntf, Xml.XMLDoc, Vcl.ExtCtrls,Encrypt;
+  Vcl.FileCtrl, ShlwApi, Xml.XMLIntf, Xml.XMLDoc, Vcl.ExtCtrls,Encrypt,XMLDataController;
 
 type
-  TUpdateFile = class(TInterfacedObject)
-  private
-    FFileName: string;
-    FFileURL: string;
-    FChkType: string;
-    FUpdateType: string;
-    FVersion: string;
-    FModyDatetime: string;
-    FFileSize: string;
-    FDeskFile: string;
-    FDeskDir: string;
-    FMd5Code: String;
-    function isBinFile(FileName: string): Boolean;
-  public
-    constructor Create;
-    property ChkType: string read FChkType write FChkType;
-    property DeskFile: string read FDeskFile write FDeskFile;
-    property DeskDir: string read FDeskDir write FDeskDir;
-    property FileName: string read FFileName write FFileName;
-    property FileSize: string read FFileSize write FFileSize;
-    property FileURL: string read FFileURL write FFileURL;
-    property Md5Code: String read FMd5Code write FMd5Code;
-    property ModyDatetime: string read FModyDatetime write FModyDatetime;
-    property UpdateType: string read FUpdateType write FUpdateType;
-    property Version: string read FVersion write FVersion;
-  end;
-
   TFrmNCreateXML = class(TForm)
     Label2: TLabel;
     Labellbl1: TLabel;
@@ -86,14 +59,19 @@ type
     procedure btnBatchSaveClick(Sender: TObject);
   private
     FEncrypt: IEncrypt;
+    FXMLTranse: TXMLTranse;
+    procedure AnalyseXML;
     function GetRelativePath(const Path, AFile: string): string;
     procedure CreateXMLNode(root: IXmlNode; uFile: TUpdateFile);
   public
+    property Encrypt: IEncrypt read FEncrypt;
     { Public declarations }
   end;
 
+  procedure GetFileInfo(temFile: TUpdateFile; FileName: string);
+
   const
-    binFiles: array[0..3] of string = ('.EXE', '.DLL', '.BPL', '.OCX');
+    XMLDefineFileName = 'UpdateList.xml';
 
 procedure GetChildFileList(AStrings: TStrings; ASourFile, FileName: string); // 查找子目录
 
@@ -226,6 +204,7 @@ begin
   if SelectDirectory('请指定文件夹', '', temp) then
   begin
     edtDir.Text := IncludeTrailingPathDelimiter(temp);
+    AnalyseXML;
   end;
 end;
 
@@ -305,9 +284,29 @@ begin
   TmpList.Free;
 end;
 
+procedure TFrmNCreateXML.AnalyseXML;
+var
+  FileName : String;
+  UpdateFile: TUpdateFile;
+begin
+  // TODO -cMM: TFrmNCreateXML.AnalyseXML default body inserted
+  FileName := edtDir.Text + XMLDefineFileName;
+  if TFile.Exists(FileName) then
+  begin
+    FXMLTranse := TXMLTranse.Create(FileName);
+    ListBox1.Clear;
+    for UpdateFile in FXMLTranse.UpdateFiles do
+    begin
+      ListBox1.AddItem(UpdateFile.FileURL, UpdateFile);
+    end;
+  end;
+end;
+
 procedure TFrmNCreateXML.FormDestroy(Sender: TObject);
 begin
   FEncrypt := nil;
+  if Assigned(FXMLTranse) then
+    FreeAndNil(FXMLTranse);
 end;
 
 procedure TFrmNCreateXML.btnAddDirClick(Sender: TObject);
@@ -361,7 +360,7 @@ begin
   if ListBox1.Items.Count <= 0 then
     Exit;
 
-  SavePathFileName := edtDir.Text + 'UpdateList.xml';
+  SavePathFileName := edtDir.Text + XMLDefineFileName;
   ixd := NewXmlDocument();
 
   root := ixd.AddChild('UpdateLists');
@@ -464,10 +463,6 @@ begin
   begin
     edtURL.Text := upFile.FileURL;
 
-//    if upFile.UpdateType = '0' then
-//      rbCopy.Checked := True
-//    else if upFile.UpdateType = '1' then
-//      rbExecute.Checked := True;
     rgUpdateType.ItemIndex := StrToInt(Pwidechar(upFile.UpdateType));
 
     if upFile.ChkType = '0' then
@@ -481,7 +476,6 @@ begin
     else if upFile.ChkType = '4' then
     begin
       rbCreate.Checked := True;
-        //rbExecute.Checked := True;
     end;
 
     edtSize.Text := upFile.FileSize;
@@ -489,33 +483,6 @@ begin
     edtMody.Text := upFile.ModyDatetime;
     edtDesk.Text := upFile.DeskFile;
     edtdeskDir.Text := upFile.DeskDir;
-  end;
-end;
-
-{ TUpdateFile }
-
-constructor TUpdateFile.Create;
-begin
-  inherited;
-  FChkType := '1';
-  FUpdateType := '0';
-  FVersion := '1';
-  FDeskDir := '';
-end;
-
-function TUpdateFile.isBinFile(FileName: string): Boolean;
-var
-  i: Integer;
-begin
-  Result := false;
-  // TODO -cMM: TUpdateFile.isBinFile default body inserted
-  for I := 0 to Length(binFiles) do
-  begin
-    if UpperCase(TPath.GetExtension(FileName)) = binFiles[i] then
-    begin
-      Result := True;
-      exit;
-    end;
   end;
 end;
 
