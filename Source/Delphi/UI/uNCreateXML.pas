@@ -412,7 +412,9 @@ begin
 
   node9 := node1.AddChild('DeskFile');
   if uFile.DeskDir <> '' then
-    node9.Text := uFile.DeskDir + '\' + uFile.DeskFile
+  begin
+    node9.Text := IncludeTrailingPathDelimiter(uFile.DeskDir) + uFile.DeskFile
+  end
   else
     node9.Text := uFile.DeskFile;
   Node10 := node1.AddChild('md5');

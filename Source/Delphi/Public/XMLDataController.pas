@@ -127,7 +127,7 @@ begin
     Update := TUpdateFile.Create;
     Node := RootNode.ChildNodes[i];
     Update.ChkType := Node.ChildNodes['chkType'].Text;
-    UPdate.FDeskFile := Node.ChildNodes['DeskFile'].text;
+    UPdate.FDeskFile := ExtractFileName(Node.ChildNodes['DeskFile'].text);
     Update.ModyDatetime := Node.ChildNodes['DateTime'].text;
     Update.Version := Node.ChildNodes['Version'].Text;
     Update.UpdateType := Node.ChildNodes['UpdateType'].Text;
@@ -135,7 +135,9 @@ begin
     Update.FileName := TPath.GetFileName(Node.ChildNodes['FileName'].Text);
     Update.FileSize := Node.ChildNodes['FileSize'].Text;
     Update.Md5Code := Node.ChildNodes['md5'].Text;
-    Update.FDeskDir := Node.ChildNodes['DeskFile'].Text;
+    Update.FDeskDir := ExtractFilePath(Node.ChildNodes['DeskFile'].Text);
+    if Rightstr(Update.FDeskDir, 1) = '\' then
+      Update.FDeskDir := Leftstr(Update.FDeskDir, Length(Update.FDeskDir) - 1);
     FUpdatefiles.Add(Update);
   end;
 end;
